@@ -66,7 +66,7 @@ public class LoadingActivity extends AppCompatActivity {
     }
 
 
-    /////////////////////////////////
+    //////////////////////////////////
 
     /**
      * Cacher les barres d'interface androïd
