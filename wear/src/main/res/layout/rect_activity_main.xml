@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="parkidia.parking.a4lpmms.gestionparking_android.MainActivity"
+    tools:context="parkidia.parking.a4lpmms.gestionparking_android.LoadingActivity"
     tools:deviceIds="wear_square">
 
     <TextView
