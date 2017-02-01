@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/itemlist_layout"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:elevation="1dp">
+
+    <TextView
+        android:id="@+id/nomPark"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#262626"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBaseline="@id/nomPark"
+        android:layout_marginEnd="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#42BD41"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/refreshTime"
+        android:layout_below="@id/nomPark"
+        android:layout_marginStart="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#757575"
+        android:textSize="13sp"/>
+
+    <ImageView
+        android:id="@+id/disponibilite"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:src="@drawable/cars_bg"
+        android:layout_below="@id/distance"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="20dp"
+        android:layout_alignParentEnd="true"/>
+
+    <View
+        android:id="@+id/separateur"
+        android:layout_below="@id/disponibilite"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="#E0E0E0" />
+
+    <TextView
+        android:id="@+id/refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rafraichir"
+        android:textSize="16sp"
+        android:textColor="#AEAEAE"
+        android:layout_marginStart="20dp"
+        android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:id="@+id/guidage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/guidage"
+        android:textSize="16sp"
+        android:textColor="#288AE2"
+        android:layout_toEndOf="@id/refresh"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="40dp"/>
+
+    <ImageView
+        android:id="@+id/favorite"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/star_favori"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/separateur"/>
+</RelativeLayout>

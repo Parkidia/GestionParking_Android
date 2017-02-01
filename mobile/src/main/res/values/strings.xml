@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">GestionParking_Android</string>
+    <string name="app_name">Gestion des parkings</string>
+    <string name="distance">Distance</string>
+
+    <string name="rafraichir">RAFRAÎCHIR</string>
+    <string name="guidage">GUIDAGE</string>
 </resources>

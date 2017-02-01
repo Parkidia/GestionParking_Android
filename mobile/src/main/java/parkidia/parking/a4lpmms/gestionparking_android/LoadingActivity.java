@@ -1,26 +1,19 @@
 package parkidia.parking.a4lpmms.gestionparking_android;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
-import com.google.android.gms.vision.Frame;
 
 import parkidia.parking.a4lpmms.gestionparking_android.constants.Constante;
 
 import static java.lang.Math.round;
 
-public class LoadingActivity extends AppCompatActivity {
+public class LoadingActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +42,9 @@ public class LoadingActivity extends AppCompatActivity {
 
         //animer le chargemnt
         animLoading(loadingPoint);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -69,14 +65,11 @@ public class LoadingActivity extends AppCompatActivity {
     //////////////////////////////////
 
     /**
-     * Cacher les barres d'interface androïd
+     * Cacher les barres d'interface android
      */
     private void hideComponent(){
         View decorView = getWindow().getDecorView();
-        // Hide both the navigation bar and the status bar.
-        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
-        // a general rule, you should design your app to hide the status bar whenever you
-        // hide the navigation bar.
+        // Cache la barre de menu par défaut d'un application
         int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 //| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
