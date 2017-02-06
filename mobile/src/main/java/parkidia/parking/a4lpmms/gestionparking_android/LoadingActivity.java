@@ -43,7 +43,7 @@ public class LoadingActivity extends Activity {
         //animer le chargemnt
         animLoading(loadingPoint);
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ScreenSlidePagerActivity.class);
         startActivity(intent);
     }
 

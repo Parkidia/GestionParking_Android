@@ -4,4 +4,13 @@
 
     <string name="rafraichir">RAFRAÎCHIR</string>
     <string name="guidage">GUIDAGE</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rechercher">Rechercher</string>
+    <string name="param_tres">Paramètres</string>
+    <string name="proches">Proches</string>
+    <string name="accueil">Accueil</string>
+    <string name="intervalle_de_rafra_chissement">Intervalle de rafraîchissement</string>
+    <string name="autre_chose">Autre chose</string>
 </resources>
