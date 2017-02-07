@@ -1,9 +1,6 @@
 package parkidia.parking.a4lpmms.gestionparking_android.fragments;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +12,7 @@ import java.util.HashMap;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
 
-public class ListeParkingsFragment extends ListFragment {
+public class ListeParkingsFragmentProches extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +55,7 @@ public class ListeParkingsFragment extends ListFragment {
         map.put("refreshTime", "À l'instant");
         items.add(map);
 
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_nopreview,
+        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_preview,
                 new String[]{"nom", "refreshTime"},
                 new int[]{R.id.nomPark, R.id.refreshTime});
 

@@ -7,6 +7,28 @@
     android:orientation="vertical"
     android:paddingBottom="10dp">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/parking" />
+
+        <ImageView
+            android:id="@+id/favorite"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/star_favori" />
+    </RelativeLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,8 +78,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="25dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:orientation="horizontal">
 
         <TextView
@@ -66,7 +88,6 @@
             android:layout_height="match_parent"
             android:layout_marginStart="20dp"
             android:text="@string/rafraichir"
-            android:gravity="center_vertical"
             android:textColor="#AEAEAE"
             android:textSize="14sp" />
 
@@ -74,21 +95,9 @@
             android:id="@+id/guidage"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
             android:layout_marginStart="40dp"
             android:text="@string/guidage"
             android:textColor="#288AE2"
             android:textSize="14sp" />
-
-        <ImageView
-            android:id="@+id/favorite"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="15dp"
-            android:gravity="end"
-            android:src="@drawable/star_favori"
-            android:scaleType="fitEnd"
-            android:scaleX="0.8"
-            android:scaleY="0.8" />
     </LinearLayout>
 </LinearLayout>

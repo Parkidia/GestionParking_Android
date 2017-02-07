@@ -7,8 +7,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragment;
+import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentProches;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentSearch;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ParametersFragment;
 
@@ -37,6 +41,33 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
+
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                ImageView[] icones = new ImageView[NUM_PAGES];
+                icones[0] = (ImageView) findViewById(R.id.home);
+                icones[1] = (ImageView) findViewById(R.id.near);
+                icones[2] = (ImageView) findViewById(R.id.search);
+                icones[3] = (ImageView) findViewById(R.id.settings);
+
+                for (ImageView ico: icones) {
+                    ico.setAlpha(0.5f);
+                }
+                icones[position].setAlpha(1f);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
@@ -52,20 +83,37 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     }
 
     /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
+     * Réagit au clic de l'utilisateur sur un bouton du bandeau du bas
+     * Défile les vues jusqu'à la vue sélectionnée
+     * @param view bouton sur lequel on a cliqué
+     */
+    public void scrollTo(View view) {
+        int position = Integer.parseInt(view.getTag().toString());
+        mPager.setCurrentItem(position, true);
+    }
+
+    /**
+     * Pager qui représente le slider des 4 pages
      */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
+        /**
+         * Positionne le fragment de vue aux positions données
+         * @param position position qui correspond à la vue
+         * @return Vue à ajouter à la position donnée
+         */
         @Override
         public Fragment getItem(int position) {
             Fragment fragment;
             switch (position) {
                 case 0:
                     fragment = new ListeParkingsFragment();
+                    break;
+                case 1:
+                    fragment = new ListeParkingsFragmentProches();
                     break;
                 case 2:
                     fragment = new ListeParkingsFragmentSearch();
