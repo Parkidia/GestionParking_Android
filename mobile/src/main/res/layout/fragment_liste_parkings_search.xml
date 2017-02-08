@@ -60,7 +60,6 @@
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="20.0dp"
             android:scrollbars="none" />
     </LinearLayout>
 </LinearLayout>

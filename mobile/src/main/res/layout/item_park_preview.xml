@@ -1,103 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/itemlist_layout"
-    android:elevation="1dp"
-    android:orientation="vertical"
-    android:paddingBottom="10dp">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/preview"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/parking" />
-
-        <ImageView
-            android:id="@+id/favorite"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/star_favori" />
-    </RelativeLayout>
-
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/itemlist_layout"
+        android:elevation="1dp"
+        android:orientation="vertical"
+        android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/nomPark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#262626"
-            android:textSize="20sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/distance"
+            <ImageView
+                android:id="@+id/preview"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/parking" />
+
+            <ImageView
+                android:id="@+id/favorite"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/star_favori" />
+        </RelativeLayout>
+
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:gravity="end"
-            android:textColor="#42bd41"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/refreshTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="#757575"
-        android:textSize="13sp" />
-
-    <ImageView
-        android:id="@+id/disponibilite"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_gravity="end"
-        android:layout_marginEnd="15dp"
-        android:src="@drawable/cars_bg" />
-
-    <View
-        android:id="@+id/separateur"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="15dp"
-        android:background="#E0E0E0" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:layout_marginStart="20dp"
-            android:text="@string/rafraichir"
-            android:textColor="#AEAEAE"
-            android:textSize="14sp" />
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/nomPark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#262626"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:gravity="end"
+                android:textColor="#42bd41"
+                android:textSize="14sp" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/guidage"
+            android:id="@+id/refreshTime"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="40dp"
-            android:text="@string/guidage"
-            android:textColor="#288AE2"
-            android:textSize="14sp" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:textColor="#757575"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/disponibilite"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/cars_bg" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="15dp"
+            android:background="#E0E0E0" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:text="@string/rafraichir"
+                android:textColor="#AEAEAE"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/guidage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="40dp"
+                android:text="@string/guidage"
+                android:textColor="#288AE2"
+                android:textSize="14sp" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
