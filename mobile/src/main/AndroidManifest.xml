@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ScreenSlidePagerActivity"></activity>
+        <activity android:name=".guidage.GuideActivity"></activity>
     </application>
 
 </manifest>
