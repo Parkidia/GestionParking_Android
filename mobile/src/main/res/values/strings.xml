@@ -13,4 +13,5 @@
     <string name="accueil">Accueil</string>
     <string name="intervalle_de_rafra_chissement">Intervalle de rafraîchissement</string>
     <string name="autre_chose">Autre chose</string>
+    <string name="label_param_miniature">Afficher la miniature du parking</string>
 </resources>

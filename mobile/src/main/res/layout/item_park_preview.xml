@@ -29,11 +29,14 @@
 
             <ImageView
                 android:id="@+id/favorite"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:tag="nonfav"
+                android:onClick="clicFavorite"
                 android:src="@drawable/star_favori" />
         </RelativeLayout>
 
@@ -70,13 +73,27 @@
             android:textColor="#757575"
             android:textSize="13sp" />
 
-        <ImageView
-            android:id="@+id/disponibilite"
-            android:layout_width="100dp"
-            android:layout_height="20dp"
-            android:layout_gravity="end"
-            android:layout_marginEnd="15dp"
-            android:src="@drawable/cars_bg" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="-20dp"
+            android:scaleX="0.55"
+            android:scaleY="0.55"
+            android:layout_gravity="end">
+
+            <ImageView
+                android:id="@+id/disponibilite"
+                android:layout_gravity="start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/cars_bg" />
+
+            <ImageView
+                android:id="@+id/overlay"
+                android:layout_gravity="start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </FrameLayout>
 
         <View
             android:layout_width="match_parent"

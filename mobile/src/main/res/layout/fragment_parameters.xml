@@ -28,7 +28,21 @@
             android:background="#E0E0E0"
             android:layout_marginTop="7dp"
             android:layout_marginBottom="7dp" />
-        
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#262626"
+            android:textSize="17sp"
+            android:text="@string/label_param_miniature" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

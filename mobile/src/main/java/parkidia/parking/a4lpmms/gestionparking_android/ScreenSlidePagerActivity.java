@@ -5,6 +5,7 @@
  */
 package parkidia.parking.a4lpmms.gestionparking_android;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -14,6 +15,12 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentHome;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentProches;
@@ -34,6 +41,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     /** Fourni la page au pager */
     private PagerAdapter mPagerAdapter;
 
+    private SharedPreferences preferences;
     /**
      * Initialise le viewPager qui va gérer les différentes pages de l'activité
      * @param savedInstanceState Etat de l'instance
@@ -48,6 +56,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
+        preferences = getSharedPreferences("prefs", MODE_PRIVATE);
         // On ajoute un listener sur le viewpager pour "éclairer" l'icone correspondante
         // à la page actuelle
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -104,6 +113,35 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     public void scrollTo(View view) {
         int position = Integer.parseInt(view.getTag().toString());
         mPager.setCurrentItem(position, true);
+    }
+
+    /**
+     * Clic sur le bouton Rafraîchir d'une liste
+     * @param v TextView rafraichir de la listeView
+     */
+    public void clicRefresh(View v) {
+        Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Clic sur le bouton "étoile" d'ajout aux favoris
+     * Ajoute le parking aux favoris, ou l'enlève s'il est déjà en favoris
+     * @param view
+     */
+    public void clicFavorite(View view) {
+        Toast.makeText(this, "favoris", Toast.LENGTH_SHORT).show();
+        ImageView iconeFav = (ImageView) view;
+
+        if (view.getTag().equals("nonfav")) {
+            iconeFav.setImageResource(R.drawable.star_favori_full);
+            view.setTag("fav");
+            // TODO Ajouter aux favoris dans les préférences
+        } else {
+            iconeFav.setImageResource(R.drawable.star_favori);
+            view.setTag("nonfav");
+            // TODO Retirer le favoris des préférences
+        }
+        iconeFav.refreshDrawableState();
     }
 
     /**

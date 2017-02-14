@@ -47,13 +47,28 @@
             android:textColor="#757575"
             android:textSize="13sp" />
 
-        <ImageView
-            android:id="@+id/disponibilite"
-            android:layout_width="100dp"
-            android:layout_height="20dp"
-            android:layout_gravity="end"
-            android:layout_marginEnd="15dp"
-            android:src="@drawable/cars_bg" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="-20dp"
+            android:scaleX="0.55"
+            android:scaleY="0.55"
+            android:layout_gravity="end">
+
+            <ImageView
+                android:id="@+id/disponibilite"
+                android:layout_gravity="start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/cars_bg" />
+
+            <ImageView
+                android:id="@+id/overlay"
+                android:layout_gravity="start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </FrameLayout>
 
         <View
             android:layout_width="match_parent"
@@ -72,7 +87,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
+                android:clickable="true"
+                android:focusable="false"
                 android:gravity="center_vertical"
+                android:onClick="clicRefresh"
                 android:text="@string/rafraichir"
                 android:textColor="#AEAEAE"
                 android:textSize="14sp" />
@@ -92,11 +110,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="15dp"
+                android:clickable="true"
                 android:gravity="end"
+                android:onClick="clicFavorite"
                 android:scaleType="fitEnd"
                 android:scaleX="0.8"
                 android:scaleY="0.8"
-                android:src="@drawable/star_favori" />
+                android:src="@drawable/star_favori"
+                android:tag="nonfav" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
