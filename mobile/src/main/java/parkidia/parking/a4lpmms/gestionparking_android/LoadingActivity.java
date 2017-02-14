@@ -13,8 +13,15 @@ import parkidia.parking.a4lpmms.gestionparking_android.constants.Constante;
 
 import static java.lang.Math.round;
 
+/**
+ * Animation du chargement des données
+ */
 public class LoadingActivity extends Activity {
 
+    /**
+     * Création des différents composants animants la vue
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
