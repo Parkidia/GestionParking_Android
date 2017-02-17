@@ -5,11 +5,12 @@
  */
 package parkidia.parking.a4lpmms.gestionparking_android.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +19,11 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 
 /**
@@ -63,7 +61,14 @@ public class ListeParkingsFragmentHome extends ListFragment {
         // Json en brut pour tester le fonctionnement
         // Ce json sera récupérer plus tard au serveur JEE
         String jsonRecu = "[{\"nom\": \"IUT de rodez\",\"nbPlaces\": 15,\"nbPlacesLibres\": 8,\"latitude\": 11,\"longitude\": 12}, {\"nom\": \"Geant\",\"nbPlaces\": 50,\"nbPlacesLibres\": 10,\"latitude\": 15.52,\"longitude\": 16.95}]";
-        ArrayList<Parking> parks = decodeJson("{\"parking\": "+jsonRecu + "}");
+
+        SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        String jsonFav = prefs.getString("favoris", "{\"favoris\": []}");
+        ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": "+jsonRecu + "}");
+        // trier les parkings et ne garder que ceux qui sont favoris
+        ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
+
+        parks = trierFavoris(parks, favoris);
 
         // Liste contenant les items
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
@@ -91,36 +96,21 @@ public class ListeParkingsFragmentHome extends ListFragment {
     }
 
     /**
-     * Récupère le fichier JSON du serveur JEE
-     * le décode et le transforme en Parking[]
-     *
-     * @return un tableau correspondant au JSON
+     * Compare la liste des parkings avec la liste des favoris pour ne garder que les parkings
+     * notés en favoris
+     * @param parks Liste des parkings
+     * @param favoris Liste des favoris
+     * @return Liste des parkings favoris
      */
-    private ArrayList<Parking> decodeJson(String json) {
-        // Va contenir tous les parkings du JSON
-        ArrayList<Parking> parkings = new ArrayList<Parking>();
-        try {
-            // Création de l'object Json
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray jsonArray = jsonObject.getJSONArray("parking");
-            // Parcours tous les parkings du Json
-            for (int i = 0; i < jsonArray.length(); i++) {
-                // Récupération des infos du parking
-                String nom = jsonArray.getJSONObject(i).getString("nom");
-                int nbPlaces = jsonArray.getJSONObject(i).getInt("nbPlaces");
-                int nbPlacesLibres = jsonArray.getJSONObject(i).getInt("nbPlacesLibres");
-                long longitude = jsonArray.getJSONObject(i).getLong("longitude");
-                long latitude = jsonArray.getJSONObject(i).getLong("latitude");
-                Parking p = new Parking(nom, nbPlaces, nbPlacesLibres, longitude, latitude);
-                // Ajout du nouveau parking à la liste
-                parkings.add(p);
+    private ArrayList<Parking> trierFavoris(ArrayList<Parking> parks, ArrayList<String> favoris) {
+        ArrayList<Parking> parkFavoris = new ArrayList<>();
+        for (int i = 0; i < parks.size(); i++) {
+            if (favoris.contains(parks.get(i).getNom())) {
+                parkFavoris.add(parks.get(i));
             }
-        } catch (JSONException e) {
-            Log.e("JSON", "Erreur du format JSON");
         }
-        return parkings;
+        return parkFavoris;
     }
-
 
     /**
      * Classe binder pour faire correspondre les items de la map avec les views

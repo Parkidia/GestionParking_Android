@@ -5,6 +5,8 @@
  */
 package parkidia.parking.a4lpmms.gestionparking_android.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 
 /**
@@ -51,7 +54,13 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         // Json en brut pour tester le fonctionnement
         // Ce json sera récupérer plus tard au serveur JEE
         String jsonRecu = "[{\"nom\": \"IUT de rodez\",\"nbPlaces\": 15,\"nbPlacesLibres\": 8,\"latitude\": 11,\"longitude\": 12}, {\"nom\": \"Geant\",\"nbPlaces\": 50,\"nbPlacesLibres\": 10,\"latitude\": 15.52,\"longitude\": 16.95}]";
-        ArrayList<Parking> parks = decodeJson("{\"parking\": "+jsonRecu + "}");
+
+        // Récupère les parkings favoris
+        SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        String jsonFav = prefs.getString("favoris", "{\"favoris\": []}");
+
+        ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": "+jsonRecu + "}");
+        ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
         // Liste contenant les items
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
@@ -62,7 +71,11 @@ public class ListeParkingsFragmentSearch extends ListFragment {
             double occupation = (parks.get(i).getPlaceDispo()*1.0) / (parks.get(i).getPlaces()*1.0);
             map.put("nom", parks.get(i).getNom());
             map.put("distance", "1km");
-            map.put("favoris", "true");
+            if (favoris.contains(parks.get(i).getNom())) {
+                map.put("favoris", "true");
+            } else {
+                map.put("favoris", "false");
+            }
             map.put("refreshTime", "À l'instant");
             map.put("occupation", occupation+"");
             items.add(map);
@@ -77,38 +90,6 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         adapter.setViewBinder(new MyBinder());
         this.setListAdapter(adapter);
     }
-    /**
-     * Récupère le fichier JSON du serveur JEE
-     * le décode et le transforme en Parking[]
-     *
-     * @return un tableau correspondant au JSON
-     */
-    private ArrayList<Parking> decodeJson(String json) {
-        // Va contenir tous les parkings du JSON
-        ArrayList<Parking> parkings = new ArrayList<Parking>();
-        try {
-            // Création de l'object Json
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray jsonArray = jsonObject.getJSONArray("parking");
-            // Parcours tous les parkings du Json
-            for (int i = 0; i < jsonArray.length(); i++) {
-                // Récupération des infos du parking
-                String nom = jsonArray.getJSONObject(i).getString("nom");
-                int nbPlaces = jsonArray.getJSONObject(i).getInt("nbPlaces");
-                int nbPlacesLibres = jsonArray.getJSONObject(i).getInt("nbPlacesLibres");
-                long longitude = jsonArray.getJSONObject(i).getLong("longitude");
-                long latitude = jsonArray.getJSONObject(i).getLong("latitude");
-                Parking p = new Parking(nom, nbPlaces, nbPlacesLibres, longitude, latitude);
-                // Ajout du nouveau parking à la liste
-                parkings.add(p);
-            }
-        } catch (JSONException e) {
-            Log.e("JSON", "Erreur du format JSON");
-        }
-        return parkings;
-    }
-
-
     /**
      * Classe binder pour faire correspondre les items de la map avec les views
      */

@@ -15,13 +15,11 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-
+import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentHome;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentProches;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentSearch;
@@ -42,6 +40,8 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     private PagerAdapter mPagerAdapter;
 
     private SharedPreferences preferences;
+    /* Page actuelle */
+    private int currentPage = 0;
     /**
      * Initialise le viewPager qui va gérer les différentes pages de l'activité
      * @param savedInstanceState Etat de l'instance
@@ -56,6 +56,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
+        // Préférences utilisateur
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
         // On ajoute un listener sur le viewpager pour "éclairer" l'icone correspondante
         // à la page actuelle
@@ -79,6 +80,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
              */
             @Override
             public void onPageSelected(int position) {
+                currentPage = position;
                 // Association avec le layout
                 ImageView[] icones = new ImageView[NUM_PAGES];
                 icones[0] = (ImageView) findViewById(R.id.home);
@@ -116,11 +118,19 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     }
 
     /**
+     * Positionne la page sur le page position
+     * @param position position de la page à laquelle on veut accéder
+     */
+    public void scrollTo(int position) {
+        mPager.setCurrentItem(position, true);
+    }
+
+    /**
      * Clic sur le bouton Rafraîchir d'une liste
      * @param v TextView rafraichir de la listeView
      */
     public void clicRefresh(View v) {
-        Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
+        // TODO rafraichir la liste sélectionnée
     }
 
     /**
@@ -129,19 +139,53 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
      * @param view
      */
     public void clicFavorite(View view) {
-        Toast.makeText(this, "favoris", Toast.LENGTH_SHORT).show();
         ImageView iconeFav = (ImageView) view;
+        LinearLayout sousLayout;
+        LinearLayout layout = (LinearLayout) view.getParent().getParent();
+        try {
+            // Si le layout de l'item est celui sans preview
+            sousLayout = (LinearLayout) layout.getChildAt(0);
+        } catch (Exception e) {
+            // Si le laout de l'item est celui avec preview
+            sousLayout = (LinearLayout) layout.getChildAt(1);
+        }
+        // On récupère le TextView contenant le nom du parking
+        TextView nomParking = (TextView) sousLayout.getChildAt(0);
 
         if (view.getTag().equals("nonfav")) {
             iconeFav.setImageResource(R.drawable.star_favori_full);
             view.setTag("fav");
-            // TODO Ajouter aux favoris dans les préférences
+
+            // Ajouter aux favoris dans les préférences
+            String json = preferences.getString("favoris", "{\"favoris\": []}");
+            json = JsonManager.encodeAddFavoris(json, nomParking.getText().toString());
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("favoris", json);
+            editor.commit();
         } else {
             iconeFav.setImageResource(R.drawable.star_favori);
             view.setTag("nonfav");
-            // TODO Retirer le favoris des préférences
+            // Retirer le favoris des préférences
+            String json = preferences.getString("favoris", "{\"favoris\": []}");
+            json = JsonManager.encodeRemFavoris(json, nomParking.getText().toString());
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("favoris", json);
+            editor.commit();
         }
         iconeFav.refreshDrawableState();
+
+        // Rafraichir les listes des parkings = recharger les fragments
+        reloadFragments();
+    }
+
+    /**
+     * Recharge le contenu des fragments de l'activité
+     */
+    private void reloadFragments() {
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+        // Positionne l'user à la page à laquelle il était
+        scrollTo(currentPage);
     }
 
     /**
