@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -36,14 +39,19 @@ import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
  */
 public class ListeParkingsFragmentProches extends ListFragment {
 
+    /* Coordonnées GPS */
+    private double longitude;
+    private double latitude;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings, container, false);
 
-        // TODO récupérer la position de l'utilisateur (permissions manifest)
+        // TODO récupérer la position de l'utilisateur
 
         // Complète la liste avec les parkings à proximité de la position de l'utilisateur
         fillListView();
+
         return rootView;
     }
 

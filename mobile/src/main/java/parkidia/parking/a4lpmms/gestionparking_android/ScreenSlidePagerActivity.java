@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentHome;

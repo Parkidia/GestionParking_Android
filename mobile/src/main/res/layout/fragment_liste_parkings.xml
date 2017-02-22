@@ -8,6 +8,7 @@
     tools:context="parkidia.parking.a4lpmms.gestionparking_android.ScreenSlidePagerActivity">
     <!-- Page de contenu -->
     <LinearLayout
+        android:id="@+id/layout_base"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/content_layout_rounded"

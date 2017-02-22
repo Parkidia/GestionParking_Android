@@ -11,10 +11,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 
@@ -36,12 +39,17 @@ import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
  */
 public class ListeParkingsFragmentSearch extends ListFragment {
 
+    private EditText saisieRecherche;
+    private SimpleAdapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings_search, container, false);
 
+        saisieRecherche = (EditText) rootView.findViewById(R.id.saisieRecherche);
         // Complète la liste avec les parkings proches
         fillListView();
+
         return rootView;
     }
 
@@ -79,10 +87,27 @@ public class ListeParkingsFragmentSearch extends ListFragment {
             map.put("refreshTime", "À l'instant");
             map.put("occupation", occupation+"");
             items.add(map);
+            saisieRecherche.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    // unsed
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    // unsed
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    String texte = saisieRecherche.getText().toString();
+                    adapter.getFilter().filter(texte);
+                }
+            });
         }
 
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_nopreview,
+        adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_nopreview,
                 // Fait correspondre la valeur à la view de l'item layout
                 new String[]{"nom", "refreshTime", "favoris", "occupation"},
                 new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay});

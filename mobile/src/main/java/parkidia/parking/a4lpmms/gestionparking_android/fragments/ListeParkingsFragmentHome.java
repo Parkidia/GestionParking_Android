@@ -9,14 +9,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -34,6 +39,8 @@ import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
  */
 public class ListeParkingsFragmentHome extends ListFragment {
 
+    private ViewGroup rootView;
+
     /**
      * Initialise le fragment
      *
@@ -44,11 +51,10 @@ public class ListeParkingsFragmentHome extends ListFragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings, container, false);
 
         // Complète la liste avec les parkings favoris
         fillListView();
-
         return rootView;
     }
 
@@ -64,7 +70,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
 
         SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         String jsonFav = prefs.getString("favoris", "{\"favoris\": []}");
-        ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": "+jsonRecu + "}");
+        ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": " + jsonRecu + "}");
         // trier les parkings et ne garder que ceux qui sont favoris
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
@@ -76,12 +82,12 @@ public class ListeParkingsFragmentHome extends ListFragment {
         for (int i = 0; i < parks.size(); i++) {
             // Contient la définition de chaque item
             HashMap<String, String> map = new HashMap<String, String>();
-            double occupation = (parks.get(i).getPlaceDispo()*1.0) / (parks.get(i).getPlaces()*1.0);
+            double occupation = (parks.get(i).getPlaceDispo() * 1.0) / (parks.get(i).getPlaces() * 1.0);
             map.put("nom", parks.get(i).getNom());
             map.put("distance", "1km");
             map.put("favoris", "true");
             map.put("refreshTime", "À l'instant");
-            map.put("occupation", occupation+"");
+            map.put("occupation", occupation + "");
             items.add(map);
         }
 
@@ -96,9 +102,33 @@ public class ListeParkingsFragmentHome extends ListFragment {
     }
 
     /**
+     * S'éxécute une fois que la vue est chargée
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Créé un message si il n'y a aucun élément dans la liste
+        TextView aucunFav = new TextView(getContext());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        aucunFav.setText(getResources().getString(R.string.aucun_favoris));
+        aucunFav.setTextColor(Color.GRAY);
+        aucunFav.setPadding(20,20,20,20);
+        aucunFav.setLayoutParams(params);
+        aucunFav.setTextSize(15.0f);
+        aucunFav.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        LinearLayout parent = (LinearLayout) rootView.findViewById(R.id.layout_base);
+        parent.addView(aucunFav);
+        getListView().setEmptyView(aucunFav);
+    }
+
+    /**
      * Compare la liste des parkings avec la liste des favoris pour ne garder que les parkings
      * notés en favoris
-     * @param parks Liste des parkings
+     *
+     * @param parks   Liste des parkings
      * @param favoris Liste des favoris
      * @return Liste des parkings favoris
      */
@@ -116,14 +146,6 @@ public class ListeParkingsFragmentHome extends ListFragment {
      * Classe binder pour faire correspondre les items de la map avec les views
      */
     class MyBinder implements SimpleAdapter.ViewBinder {
-        /**
-         * TODO commenter
-         *
-         * @param view
-         * @param data
-         * @param textRepresentation
-         * @return
-         */
         @Override
         public boolean setViewValue(View view, Object data, String textRepresentation) {
             // Bind l'icone favoris
