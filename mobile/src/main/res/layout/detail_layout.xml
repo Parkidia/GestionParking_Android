@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/guid_content_padding"
+    android:background="@color/colorWhite"
+    android:id="@+id/detailLinLayout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IUT Rodez Professeur Haut"
+            android:textColor="@color/darkText"
+            android:textSize="16sp"
+            android:layout_weight="0.9"
+            android:id="@+id/titleParking"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:padding="0dp"
+            android:background="@color/colorWhite"
+            android:src="@drawable/star_favori"
+            android:scaleType="fitEnd"
+            android:layout_weight="0.1"
+            android:id="@+id/favBt"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/guid_content_padding_small_hor"
+        android:text="Il y a 12 minutes"
+        android:textColor="@color/lightText"
+        android:id="@+id/actuTV"/>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="18dp"
+        android:layout_marginTop="@dimen/guid_content_padding_small_hor">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitEnd"
+            android:src="@drawable/cars_bg"
+            android:id="@+id/carsBG"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitEnd"
+            android:id="@+id/carsOverlay"/>
+
+    </FrameLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/guid_padding_hor"
+        android:layout_marginBottom="@dimen/guid_padding_hor"
+        android:background="@color/lightColor"
+        android:id="@+id/delimViewL"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/colorWhite"
+            android:textColor="@color/lightText"
+            android:textSize="10sp"
+            android:layout_gravity="center_vertical"
+            android:text="RAFRAÎCHIR"
+            android:id="@+id/refreshBT"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:textColor="@color/greenColor"
+                android:textStyle="bold"
+                android:text="5"
+                android:id="@+id/nbPlaces"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@color/lightText"
+                android:text="/24"
+                android:id="@+id/nbTotPlaces"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
