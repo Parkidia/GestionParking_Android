@@ -31,6 +31,7 @@ import java.util.HashMap;
 import parkidia.parking.a4lpmms.gestionparking_android.R;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
+import parkidia.parking.a4lpmms.gestionparking_android.guidage.tools.UserLocationManager;
 
 /**
  * Fragment de l'activité principale, 3ème page
@@ -39,15 +40,17 @@ import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
  */
 public class ListeParkingsFragmentProches extends ListFragment {
 
+    private static final long INTERVALLE_ACTUALISATION_GPS = 30000;
     /* Coordonnées GPS */
-    private double longitude;
-    private double latitude;
+    private Location localisation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings, container, false);
 
-        // TODO récupérer la position de l'utilisateur
+        // récupérer la position de l'utilisateur
+        UserLocationManager locationManager = new UserLocationManager(getContext());
+        localisation = locationManager.getLocation(INTERVALLE_ACTUALISATION_GPS);
 
         // Complète la liste avec les parkings à proximité de la position de l'utilisateur
         fillListView();
@@ -88,7 +91,19 @@ public class ListeParkingsFragmentProches extends ListFragment {
             }
             map.put("refreshTime", "À l'instant");
             map.put("occupation", occupation+"");
-            items.add(map);
+
+            // On récupère la distance entre l'user et le parking
+            Location parking = new Location("");
+            parking.setLatitude(parking.getLatitude());
+            parking.setLongitude(parking.getLongitude());
+
+            // distance approximative en km
+            int distance = (int)(parking.distanceTo(localisation) * 1000);
+
+            // TODO récupérer la distance des paramètres (préférences)
+            if (distance <= 3) {
+                items.add(map);
+            }
         }
 
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)

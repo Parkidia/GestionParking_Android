@@ -25,7 +25,7 @@ import static android.content.Context.LOCATION_SERVICE;
 
 
 /**
- * Created by matthieubravo on 20/01/2017.
+ * Created by Matthieu BRAVO on 20/01/2017.
  */
 
 public class UserLocationManager implements LocationListener {
@@ -50,7 +50,6 @@ public class UserLocationManager implements LocationListener {
     double longitude;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
-    private static final long MIN_TIME_BW_UPDATES = 80;
 
     protected LocationManager locationManager;
 
@@ -64,15 +63,14 @@ public class UserLocationManager implements LocationListener {
     public UserLocationManager(Context context) {
 
         this.context = context;
-
-        getLocation();
     }
 
     /**
      * Obtenir la localisation de l'utilisateur
+     * @param updateInterval Temps entre chaque actualisation de localisation
      * @return Location, objet contenant les coordonnées de l'utilsateur
      */
-    public Location getLocation() {
+    public Location getLocation(long updateInterval) {
         try {
 
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
@@ -87,8 +85,8 @@ public class UserLocationManager implements LocationListener {
                     if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         showSettingsAlert();
                     }
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, updateInterval, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, updateInterval, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
                     if (locationManager != null) {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -102,7 +100,7 @@ public class UserLocationManager implements LocationListener {
 
                 if (isGPSEnabled) {
                     if (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, updateInterval, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
                         if (locationManager != null) {
                             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
