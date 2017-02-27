@@ -4,4 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="carHeight">20dp</dimen>
     <dimen name="carWidth">100dp</dimen>
+    <dimen name="padding_guid_vert">15dp</dimen>
+    <dimen name="guid_content_padding">15dp</dimen>
+    <dimen name="guid_content_padding_small_hor">1dp</dimen>
+    <dimen name="guid_padding_hor">15dp</dimen>
 </resources>
