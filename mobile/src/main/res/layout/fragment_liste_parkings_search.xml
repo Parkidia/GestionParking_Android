@@ -1,66 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#288AE2"
-    android:orientation="vertical"
-    tools:context="parkidia.parking.a4lpmms.gestionparking_android.ScreenSlidePagerActivity">
-    <!-- Barre de recherche -->
+    android:layout_height="match_parent">
+
     <LinearLayout
+        android:background="#288AE2"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="18dp"
-        android:layout_marginRight="18dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/recherche_layout_rounded"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="40dp"
+        android:layout_height="match_parent">
+        <!-- Barre de recherche -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:alpha="0.5"
-            android:cropToPadding="false"
-            android:scaleType="center"
-            android:scaleX="0.6"
-            android:scaleY="0.6"
-            android:src="@drawable/search_icon" />
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/recherche_layout_rounded"
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/saisieRecherche"
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:alpha="0.5"
+                android:cropToPadding="false"
+                android:scaleType="center"
+                android:scaleX="0.6"
+                android:scaleY="0.6"
+                android:src="@drawable/search_icon" />
+
+            <EditText
+                android:id="@+id/saisieRecherche"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="#ffffff"
+                android:gravity="center_vertical"
+                android:inputType="text"
+                android:textColor="#ffffff"
+                android:textSize="18sp" />
+        </LinearLayout>
+        <!-- Page de contenu -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:backgroundTint="#ffffff"
-            android:gravity="center_vertical"
-            android:inputType="text"
-            android:textColor="#ffffff"
-            android:textSize="18sp" />
+            android:background="@drawable/content_layout_rounded"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/distance"
+                android:textColor="#288AE2"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#288AE2" />
+
+            <ListView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="none" />
+        </LinearLayout>
+
     </LinearLayout>
-    <!-- Page de contenu -->
     <LinearLayout
+        android:id="@+id/loader"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/content_layout_rounded"
-        android:orientation="vertical">
-
-        <TextView
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:background="#99ffffff"
+        android:visibility="gone">
+        <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/distance"
-            android:textColor="#288AE2"
-            android:textSize="18sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#288AE2" />
-
-        <ListView
-            android:id="@android:id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none" />
+            android:layout_gravity="center"/>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,7 +67,7 @@ public class ListeParkingsFragmentProches extends ListFragment {
         // TODO Récupérer le JSon du serveur pour les parkings favoris
         // Json en brut pour tester le fonctionnement
         // Ce json sera récupérer plus tard au serveur JEE
-        String jsonRecu = "[{\"nom\": \"IUT de rodez\",\"nbPlaces\": 15,\"nbPlacesLibres\": 8,\"latitude\": 11,\"longitude\": 12}, {\"nom\": \"Geant\",\"nbPlaces\": 50,\"nbPlacesLibres\": 10,\"latitude\": 15.52,\"longitude\": 16.95}]";
+        String jsonRecu = "[{\"nom\": \"IUT de rodez\",\"nbPlaces\": 15,\"nbPlacesLibres\": 8,\"latitude\": 44.360318,\"longitude\": 2.5773105}, {\"nom\": \"Geant\",\"nbPlaces\": 50,\"nbPlacesLibres\": 10,\"latitude\": 15.52,\"longitude\": 16.95}]";
 
         // Récupère les parkings favoris
         SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
@@ -94,11 +95,11 @@ public class ListeParkingsFragmentProches extends ListFragment {
 
             // On récupère la distance entre l'user et le parking
             Location parking = new Location("");
-            parking.setLatitude(parking.getLatitude());
-            parking.setLongitude(parking.getLongitude());
-
+            parking.setLatitude(parks.get(i).getLatitude());
+            parking.setLongitude(parks.get(i).getLongitude());
+            Log.e("JSON", localisation.getLatitude()+"");
             // distance approximative en km
-            int distance = (int)(parking.distanceTo(localisation) * 1000);
+            int distance = (int)(localisation.distanceTo(parking) / 1000);
 
             // TODO récupérer la distance des paramètres (préférences)
             if (distance <= 3) {

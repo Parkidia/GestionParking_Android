@@ -115,7 +115,7 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
 
         //récupération des coordonées de l'utilsateur
         UserLocationManager localisation = new UserLocationManager(this);
-        Location posCurr = localisation.getLocation();
+        Location posCurr = localisation.getLocation(500);
         userLocation = new LatLng(localisation.getLatitude(), localisation.getLongitude());
 
         //création de la voiture représentant l'utilisateur

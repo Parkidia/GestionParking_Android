@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
@@ -25,50 +26,101 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.classes.HTTPRequestManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 
 /**
  * Fragment de l'activité principale, seconde page
  * Gère la liste des parkings proches de la position de l'utilisateur
+ *
  * @author Guillaume BERNARD
  */
 public class ListeParkingsFragmentSearch extends ListFragment {
 
     private EditText saisieRecherche;
     private SimpleAdapter adapter;
+    private View rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings_search, container, false);
+        rootView = inflater.inflate(R.layout.fragment_liste_parkings_search, container, false);
 
         saisieRecherche = (EditText) rootView.findViewById(R.id.saisieRecherche);
         // Complète la liste avec les parkings proches
         fillListView();
 
+        // Effectue les recherches en direct sur les listes
+        saisieRecherche.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String texte = saisieRecherche.getText().toString();
+                adapter.getFilter().filter(texte);
+            }
+        });
         return rootView;
     }
 
     /**
      * Rempli la listeView avec les données du JSON récupéré
-     * TODO Récurérer ces infos du JSON
      */
     private void fillListView() {
-        // TODO Récupérer le JSon du serveur pour les parkings favoris
         // Json en brut pour tester le fonctionnement
         // Ce json sera récupérer plus tard au serveur JEE
-        String jsonRecu = "[{\"nom\": \"IUT de rodez\",\"nbPlaces\": 15,\"nbPlacesLibres\": 8,\"latitude\": 11,\"longitude\": 12}, {\"nom\": \"Geant\",\"nbPlaces\": 50,\"nbPlacesLibres\": 10,\"latitude\": 15.52,\"longitude\": 16.95}]";
+        final String[] jsonRecu = {""};
+        final View overlay = rootView.findViewById(R.id.loader);
+        new AsyncTask<Void, Void, Void>() {
 
+            @Override
+            protected void onPreExecute() {
+                // Affiche un loading
+                overlay.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                overlay.setVisibility(View.GONE);
+                setElementsAdapter(jsonRecu[0]);
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                try {
+                    jsonRecu[0] = HTTPRequestManager.getListeParkings();
+                } catch (IOException e) {
+                    // Impossible de contacter le serveur
+                    // TODO afficher erreur connexion serveur
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute(); // TODO décomposer la méthode pour l'async
+
+
+    }
+
+    private void setElementsAdapter(String json) {
+        Log.e("JOSN", json);
         // Récupère les parkings favoris
         SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         String jsonFav = prefs.getString("favoris", "{\"favoris\": []}");
 
-        ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": "+jsonRecu + "}");
+        ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": " + json + "}");
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
+
 
         // Liste contenant les items
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
@@ -76,7 +128,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         for (int i = 0; i < parks.size(); i++) {
             // Contient la définition de chaque item
             HashMap<String, String> map = new HashMap<String, String>();
-            double occupation = (parks.get(i).getPlaceDispo()*1.0) / (parks.get(i).getPlaces()*1.0);
+            double occupation = (parks.get(i).getPlaceDispo() * 1.0) / (parks.get(i).getPlaces() * 1.0);
             map.put("nom", parks.get(i).getNom());
             map.put("distance", "1km");
             if (favoris.contains(parks.get(i).getNom())) {
@@ -85,25 +137,8 @@ public class ListeParkingsFragmentSearch extends ListFragment {
                 map.put("favoris", "false");
             }
             map.put("refreshTime", "À l'instant");
-            map.put("occupation", occupation+"");
+            map.put("occupation", occupation + "");
             items.add(map);
-            saisieRecherche.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    // unsed
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    // unsed
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    String texte = saisieRecherche.getText().toString();
-                    adapter.getFilter().filter(texte);
-                }
-            });
         }
 
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
@@ -113,8 +148,9 @@ public class ListeParkingsFragmentSearch extends ListFragment {
                 new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay});
         // On ajoute le binder personnalisé
         adapter.setViewBinder(new MyBinder());
-        this.setListAdapter(adapter);
+        setListAdapter(adapter);
     }
+
     /**
      * Classe binder pour faire correspondre les items de la map avec les views
      */
@@ -158,8 +194,10 @@ public class ListeParkingsFragmentSearch extends ListFragment {
                 // On transforme le drawable en bitmap pour le manipuler
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), overlay);
                 // On créé l'overlay avec les voitures de la bonne couleur
-                Bitmap resized = Bitmap.createBitmap(bmp, 0, 0, (int) (bmp.getWidth() * dispo), bmp.getHeight());
-                icone.setImageBitmap(resized);
+                if (bmp.getWidth() * dispo > 0) {
+                    Bitmap resized = Bitmap.createBitmap(bmp, 0, 0, (int) (bmp.getWidth() * dispo), bmp.getHeight());
+                    icone.setImageBitmap(resized);
+                }
 
                 return true;
             }

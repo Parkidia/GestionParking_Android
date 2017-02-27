@@ -37,8 +37,8 @@ public class JsonManager {
                 String nom = jsonArray.getJSONObject(i).getString("nom");
                 int nbPlaces = jsonArray.getJSONObject(i).getInt("nbPlaces");
                 int nbPlacesLibres = jsonArray.getJSONObject(i).getInt("nbPlacesLibres");
-                long longitude = jsonArray.getJSONObject(i).getLong("longitude");
-                long latitude = jsonArray.getJSONObject(i).getLong("latitude");
+                double longitude = jsonArray.getJSONObject(i).getDouble("longitude");
+                double latitude = jsonArray.getJSONObject(i).getDouble("latitude");
                 Parking p = new Parking(nom, nbPlaces, nbPlacesLibres, longitude, latitude);
                 // Ajout du nouveau parking à la liste
                 parkings.add(p);

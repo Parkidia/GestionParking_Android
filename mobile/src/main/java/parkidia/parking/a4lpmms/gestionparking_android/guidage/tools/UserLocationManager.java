@@ -119,7 +119,7 @@ public class UserLocationManager implements LocationListener {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("LOCATION", e.getMessage());
         }
         return location;
     }

@@ -1,7 +1,6 @@
 package parkidia.parking.a4lpmms.gestionparking_android.guidage.tools;
 
 import android.content.Context;
-import android.util.AttributeSet;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -11,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import parkidia.parking.a4lpmms.gestionparking_android.guidage.composants.DetailView;
 import parkidia.parking.a4lpmms.gestionparking_android.guidage.composants.ParkPlace;
 
 /**

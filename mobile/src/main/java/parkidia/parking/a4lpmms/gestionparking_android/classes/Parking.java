@@ -7,8 +7,8 @@ public class Parking {
     private int places;
     private int placeDispo;
     private boolean favoris;
-    private long longitude;
-    private long latitude;
+    private double longitude;
+    private double latitude;
     private Bitmap miniature;
 
     public Parking(String nom, int places, int placeDispo) {
@@ -16,7 +16,7 @@ public class Parking {
         this.places = places;
         this.placeDispo = placeDispo;
     }
-    public Parking(String nom, int places, int placeDispo, long longitude, long latitude) {
+    public Parking(String nom, int places, int placeDispo, double longitude, double latitude) {
         this.nom = nom;
         this.places = places;
         this.placeDispo = placeDispo;
@@ -40,11 +40,11 @@ public class Parking {
         return favoris;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public long getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
