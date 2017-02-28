@@ -145,8 +145,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
                 parkFavoris.add(parks.get(i));
             }
         }
-        parkFavoris.add(new Parking("Test", 23, 14, 123.3, 23.333, 4));
-        parkFavoris.add(new Parking("Test2", 23, 14, 123.3, 23.333, 3));
+
         return parkFavoris;
     }
 
@@ -185,7 +184,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
                 // On transforme le drawable en bitmap pour le manipuler
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), overlay);
                 // On créé l'overlay avec les voitures de la bonne couleur
-                if (bmp.getWidth() > 0) {
+                if (bmp.getWidth() * dispo> 0) {
                     Bitmap resized = Bitmap.createBitmap(bmp, 0, 0, (int) (bmp.getWidth() * dispo), bmp.getHeight());
                     icone.setImageBitmap(resized);
                 }

@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,7 +58,7 @@ public class ListeParkingsFragmentProches extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings_proches, container, false);
 
         // récupérer la position de l'utilisateur
         UserLocationManager locationManager = new UserLocationManager(getContext());
@@ -81,18 +82,15 @@ public class ListeParkingsFragmentProches extends ListFragment {
         ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": "+jsonParkings + "}");
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
-        parks.add(new Parking("Test", 23, 14, 123.3, 23.333, 4));
-        parks.add(new Parking("Test2", 23, 14, 123.3, 23.333, 3));
         // Liste contenant les items
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
-        int distanceArea = prefs.getInt("distanceArea", 3);
+        int distanceArea = prefs.getInt("distanceArea", 5);
 
         for (int i = 0; i < parks.size(); i++) {
             // Contient la définition de chaque item
             HashMap<String, String> map = new HashMap<String, String>();
             double occupation = (parks.get(i).getPlaceDispo()*1.0) / (parks.get(i).getPlaces()*1.0);
             map.put("nom", parks.get(i).getNom());
-            map.put("distance", "1km");
             map.put("id", parks.get(i).getId()+"");
             if (favoris.contains(parks.get(i).getNom())) {
                 map.put("favoris", "true");
@@ -110,10 +108,14 @@ public class ListeParkingsFragmentProches extends ListFragment {
             if(localisation != null) {
                 int distance = (int) (localisation.distanceTo(parking) / 1000);
                 if (distance <= distanceArea) {
+                    map.put("distance", distance+"km");
+                    if (distance == 0) {
+                        map.put("distance", "> 1km");
+                    }
                     items.add(map);
                 }
             } else {
-                System.out.println("betibtiebtiebtie");
+                localisation = new Location("");
             }
 
         }
@@ -121,8 +123,8 @@ public class ListeParkingsFragmentProches extends ListFragment {
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
         SimpleAdapter adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_preview,
                 // Fait correspondre la valeur à la view de l'item layout
-                new String[]{"nom", "refreshTime", "favoris", "occupation", "id"},
-                new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id});
+                new String[]{"nom", "refreshTime", "favoris", "occupation", "id", "distance"},
+                new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id, R.id.distance});
         // On ajoute le binder personnalisé
         adapter.setViewBinder(new MyBinder());
         this.setListAdapter(adapter);
@@ -131,7 +133,7 @@ public class ListeParkingsFragmentProches extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
 
-        HashMap<String, String> value = (HashMap) getListAdapter().getItem(position);
+        HashMap<String, String> value = (HashMap<String, String>) getListAdapter().getItem(position);
         int idP = Integer.parseInt(value.get("id"));
         Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
         boolean fav = Boolean.parseBoolean(value.get("favori"));
@@ -145,14 +147,7 @@ public class ListeParkingsFragmentProches extends ListFragment {
      * Classe binder pour faire correspondre les items de la map avec les views
      */
     class MyBinder implements SimpleAdapter.ViewBinder {
-        /**
-         * TODO commenter
-         *
-         * @param view
-         * @param data
-         * @param textRepresentation
-         * @return
-         */
+
         @Override
         public boolean setViewValue(View view, Object data, String textRepresentation) {
             // Bind l'icone favoris
@@ -194,26 +189,15 @@ public class ListeParkingsFragmentProches extends ListFragment {
         }
     }
 
-    /**
-     * S'éxécute une fois que la vue est chargée
-     * @param view
-     * @param savedInstanceState
-     */
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Créé un message si il n'y a aucun élément dans la liste
-        TextView aucunParking = new TextView(getContext());
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
-        aucunParking.setText(getResources().getString(R.string.aucun_parking));
-        aucunParking.setTextColor(Color.GRAY);
-        aucunParking.setPadding(20,20,20,20);
-        aucunParking.setLayoutParams(params);
-        aucunParking.setTextSize(15.0f);
-        aucunParking.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        LinearLayout parent = (LinearLayout) view.findViewById(R.id.layout_base);
-        parent.addView(aucunParking);
-        getListView().setEmptyView(aucunParking);
+        if (getListAdapter().isEmpty()) {
+            // Créé un message si il n'y a aucun élément dans la liste
+            View emptyListView = view.findViewById(R.id.emptyListView);
+            emptyListView.setVisibility(View.VISIBLE);
+        }
     }
 }

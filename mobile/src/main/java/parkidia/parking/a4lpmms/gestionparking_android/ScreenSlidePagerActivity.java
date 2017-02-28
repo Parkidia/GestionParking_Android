@@ -175,6 +175,9 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
      */
     public void clicRefresh(View v) {
         // TODO rafraichir la liste sélectionnée
+        loadData();
+
+        Toast.makeText(this, "Click sur refresh", Toast.LENGTH_SHORT).show();
     }
 
     /**

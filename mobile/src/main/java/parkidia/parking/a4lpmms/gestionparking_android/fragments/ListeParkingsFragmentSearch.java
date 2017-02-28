@@ -99,9 +99,6 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": " + json + "}");
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
-        parks.add(new Parking("Test", 23, 14, 123.3, 23.333, 4));
-        parks.add(new Parking("Test2", 23, 14, 123.3, 23.333, 3));
-
         // Liste contenant les items
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
 
@@ -207,17 +204,10 @@ public class ListeParkingsFragmentSearch extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Créé un message si il n'y a aucun élément dans la liste
-        TextView aucunParking = new TextView(getContext());
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
-        aucunParking.setText(getResources().getString(R.string.aucun_parking));
-        aucunParking.setTextColor(Color.GRAY);
-        aucunParking.setPadding(20,20,20,20);
-        aucunParking.setLayoutParams(params);
-        aucunParking.setTextSize(15.0f);
-        aucunParking.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        LinearLayout parent = (LinearLayout) rootView.findViewById(R.id.layout_base);
-        parent.addView(aucunParking);
-        getListView().setEmptyView(aucunParking);
+        if (getListAdapter().isEmpty()) {
+            // Créé un message si il n'y a aucun élément dans la liste
+            View emptyListView = view.findViewById(R.id.emptyListView);
+            emptyListView.setVisibility(View.VISIBLE);
+        }
     }
 }
