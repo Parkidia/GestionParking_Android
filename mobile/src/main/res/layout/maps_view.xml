@@ -14,11 +14,4 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
-    <parkidia.parking.a4lpmms.gestionparking_android.guidage.composants.DetailView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:paddingLeft="@dimen/guid_padding_hor"
-        android:paddingRight="@dimen/guid_padding_hor"/>
-
 </RelativeLayout>

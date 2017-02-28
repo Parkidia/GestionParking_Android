@@ -106,13 +106,16 @@ public class ListeParkingsFragmentProches extends ListFragment {
             Location parking = new Location("");
             parking.setLatitude(parks.get(i).getLatitude());
             parking.setLongitude(parks.get(i).getLongitude());
-            Log.e("JSON", localisation.getLatitude()+"");
             // distance approximative en km
-            int distance = (int)(localisation.distanceTo(parking) / 1000);
-
-            if (distance <= distanceArea) {
-                items.add(map);
+            if(localisation != null) {
+                int distance = (int) (localisation.distanceTo(parking) / 1000);
+                if (distance <= distanceArea) {
+                    items.add(map);
+                }
+            } else {
+                System.out.println("betibtiebtiebtie");
             }
+
         }
 
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)

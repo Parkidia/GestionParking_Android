@@ -2,7 +2,6 @@ package parkidia.parking.a4lpmms.gestionparking_android.guidage.composants;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 import parkidia.parking.a4lpmms.gestionparking_android.constants.Constante;
 
 import static java.lang.Math.round;
@@ -23,6 +23,9 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
 
     /** Base du temps d'acualisation */
     private static final String LAST_ACTU_BASE = "Il y a ";
+
+    /** Unité pour la durée d'actualisation */
+    private static final String UNIT_TIME = " min";
 
     /** pourcentage de la vue avant qu'elle bascule en ouvert / fermé */
     private static final float BASCUL_RATIO = 1.2f;
@@ -42,6 +45,12 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
     /** Barre de délimitation */
     private static View delimView;
 
+    /** indicateur de places libres */
+    private static TextView parkPlaceFree;
+
+    /** indicateur de total de place */
+    private static TextView parkPlaceTotal;
+
     /** coordonée enregistrée lors du down sur la vue */
     private static int yBase = Integer.MAX_VALUE;
     private static float yBaseView;
@@ -55,8 +64,8 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
     /** Offset du début lorsque la vue est d-fermée */
     private static float yDelimOffset;
 
-    public DetailView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public DetailView(Context context, Parking parking) {
+        super(context);
 
         setOrientation(VERTICAL);
 
@@ -64,6 +73,7 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
         View view = inflater.inflate(R.layout.detail_layout, null);
 
         //récupération des éléments créés dans le XML
+        //----
         titleParking = (TextView) view.findViewById(R.id.titleParking);
 
         lastActu = (TextView) view.findViewById(R.id.actuTV);
@@ -71,6 +81,24 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
         favorisBt = (ImageButton) view.findViewById(R.id.favBt);
 
         delimView = view.findViewById(R.id.delimViewL);
+
+        parkPlaceFree = (TextView) view.findViewById(R.id.nbPlaces);
+
+        parkPlaceTotal = (TextView) view.findViewById(R.id.nbTotPlaces);
+        //----
+
+        //remplir les données
+        //----
+        titleParking.setText(parking.getNom());
+
+        lastActu.setText(LAST_ACTU_BASE + "0" + UNIT_TIME);
+
+        if(parking.isFavoris()){
+            favorisBt.setImageResource(R.drawable.star_favori_full);
+        } else {
+            favorisBt.setImageResource(R.drawable.star_favori);
+        }
+        //----
 
         //récupérer les actions de touché pour la gesiton du scroll
         setOnTouchListener(this);
@@ -180,4 +208,13 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
             this.favorisBt.setImageResource(R.drawable.star_favori);
         }
     }
+
+    public void setTextPlaceUsed(int nbPlaces){
+        parkPlaceFree.setText(nbPlaces);
+    }
+
+    public void setTextPlaceTot(int nbPlaces){
+        parkPlaceTotal.setText(nbPlaces);
+    }
+
 }

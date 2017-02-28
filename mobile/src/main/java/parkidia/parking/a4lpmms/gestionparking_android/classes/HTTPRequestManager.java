@@ -13,6 +13,8 @@ import java.net.URL;
  * Gère les requetes http de l'application
  */
 public class HTTPRequestManager {
+
+    /** racine de l'adresse du serveur */
     public static final String URL_SERVEUR = "http://192.168.43.38:8080/GestionParking_war_exploded/rest/";
 
     /**

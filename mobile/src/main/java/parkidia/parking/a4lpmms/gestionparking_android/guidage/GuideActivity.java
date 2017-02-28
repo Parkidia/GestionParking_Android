@@ -1,5 +1,6 @@
 package parkidia.parking.a4lpmms.gestionparking_android.guidage;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
@@ -25,7 +26,9 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 import parkidia.parking.a4lpmms.gestionparking_android.constants.Constante;
+import parkidia.parking.a4lpmms.gestionparking_android.guidage.composants.DetailView;
 import parkidia.parking.a4lpmms.gestionparking_android.guidage.composants.ParkPlace;
 import parkidia.parking.a4lpmms.gestionparking_android.guidage.tools.MapOverlaysManager;
 import parkidia.parking.a4lpmms.gestionparking_android.guidage.tools.UserLocationManager;
@@ -62,6 +65,9 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
 
     /**vue de conteneur de la map*/
     private RelativeLayout mapsViewLayout;
+
+    /** gestionnaire des details */
+    private DetailView detailView;
 
     /**
      * Overlay de map représentant la position de l'utilisateur
@@ -101,6 +107,14 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
 
         //récupérer la vue conteneur
         mapsViewLayout = (RelativeLayout) findViewById(R.id.mapsView);
+
+        //récupération des elements envoyé par l'activité précédente
+        Intent intent = getIntent();
+
+        Parking parking = (Parking) intent.getSerializableExtra("parking");
+
+        //création du layout de detail du parking
+        this.detailView = new DetailView(getApplicationContext(), parking);
     }
 
     /**
@@ -147,7 +161,7 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
                 .build();
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        MapOverlaysManager mapOverlaysManager = new MapOverlaysManager(getApplicationContext(), map);
+        MapOverlaysManager mapOverlaysManager = new MapOverlaysManager(getApplicationContext(), map, detailView);
 
         //passer l'objet au gestionnaire de localisation pour gérer l'acutalisation de la position
         localisation.setUserPlacemark(userLocOverlay);
@@ -188,9 +202,7 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
      */
     @Override
     public void onSensorChanged(final SensorEvent event) {
-
         if(userLocOverlay != null){
-
             //récupération de la valeur de la boussole
             float degree = Math.round(event.values[0]);
 
@@ -199,6 +211,11 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * pas utilisé
+     * @param sensor
+     * @param accuracy
+     */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
