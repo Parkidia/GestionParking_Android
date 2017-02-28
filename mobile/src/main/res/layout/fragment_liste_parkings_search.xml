@@ -1,85 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#288AE2">
+    <!-- Barre de recherche -->
     <LinearLayout
-        android:background="#288AE2"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!-- Barre de recherche -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/recherche_layout_rounded"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="18dp"
-            android:layout_marginRight="18dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/recherche_layout_rounded"
-            android:orientation="horizontal">
+            android:alpha="0.5"
+            android:cropToPadding="false"
+            android:scaleType="center"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            android:src="@drawable/search_icon" />
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:alpha="0.5"
-                android:cropToPadding="false"
-                android:scaleType="center"
-                android:scaleX="0.6"
-                android:scaleY="0.6"
-                android:src="@drawable/search_icon" />
-
-            <EditText
-                android:id="@+id/saisieRecherche"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:backgroundTint="#ffffff"
-                android:gravity="center_vertical"
-                android:inputType="text"
-                android:textColor="#ffffff"
-                android:textSize="18sp" />
-        </LinearLayout>
-        <!-- Page de contenu -->
-        <LinearLayout
+        <EditText
+            android:id="@+id/saisieRecherche"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/content_layout_rounded"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/distance"
-                android:textColor="#288AE2"
-                android:textSize="18sp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#288AE2" />
-
-            <ListView
-                android:id="@android:id/list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="none" />
-        </LinearLayout>
-
+            android:backgroundTint="#ffffff"
+            android:gravity="center_vertical"
+            android:inputType="text"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
     </LinearLayout>
+    <!-- Page de contenu -->
     <LinearLayout
-        android:id="@+id/loader"
+        android:id="@+id/layout_base"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:clickable="true"
-        android:background="#99ffffff"
-        android:visibility="gone">
-        <ProgressBar
+        android:background="@drawable/content_layout_rounded"
+        android:orientation="vertical">
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:gravity="center_horizontal"
+            android:text="@string/distance"
+            android:textColor="#288AE2"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#288AE2" />
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

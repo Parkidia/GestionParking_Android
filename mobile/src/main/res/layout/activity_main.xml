@@ -1,62 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.9"/>
-
-    <!-- Bandeau d'icones en bas de page -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#288AE2"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageView
-            android:tag="0"
-            android:id="@+id/home"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:scaleType="fitCenter"
-            android:alpha="1"
-            android:src="@drawable/home_icon"
-            android:onClick="scrollTo"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9" />
 
-        <ImageView
-            android:tag="1"
-            android:id="@+id/near"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:scaleType="fitCenter"
-            android:alpha="0.5"
-            android:src="@drawable/near_icon"
-            android:onClick="scrollTo"/>
+        <!-- Bandeau d'icones en bas de page -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#288AE2"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <ImageView
-            android:tag="2"
-            android:id="@+id/search"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:scaleType="fitCenter"
-            android:alpha="0.5"
-            android:src="@drawable/search_icon"
-            android:onClick="scrollTo"/>
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:alpha="1"
+                android:onClick="scrollTo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/home_icon"
+                android:tag="0" />
 
-        <ImageView
-            android:tag="3"
-            android:id="@+id/settings"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:scaleType="fitCenter"
-            android:alpha="0.5"
-            android:src="@drawable/setting_icon"
-            android:onClick="scrollTo"/>
+            <ImageView
+                android:id="@+id/near"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:alpha="0.5"
+                android:onClick="scrollTo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/near_icon"
+                android:tag="1" />
+
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:alpha="0.5"
+                android:onClick="scrollTo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/search_icon"
+                android:tag="2" />
+
+            <ImageView
+                android:id="@+id/settings"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:alpha="0.5"
+                android:onClick="scrollTo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/setting_icon"
+                android:tag="3" />
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="#99ffffff"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </LinearLayout>
+</FrameLayout>

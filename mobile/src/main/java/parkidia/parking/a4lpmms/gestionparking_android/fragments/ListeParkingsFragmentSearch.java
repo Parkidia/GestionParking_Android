@@ -6,21 +6,28 @@
 package parkidia.parking.a4lpmms.gestionparking_android.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,9 +38,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.ScreenSlidePagerActivity;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.HTTPRequestManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
+import parkidia.parking.a4lpmms.gestionparking_android.guidage.GuideActivity;
 
 /**
  * Fragment de l'activité principale, seconde page
@@ -45,11 +54,11 @@ public class ListeParkingsFragmentSearch extends ListFragment {
 
     private EditText saisieRecherche;
     private SimpleAdapter adapter;
-    private View rootView;
+    private ViewGroup rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_liste_parkings_search, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings_search, container, false);
 
         saisieRecherche = (EditText) rootView.findViewById(R.id.saisieRecherche);
         // Complète la liste avec les parkings proches
@@ -78,38 +87,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
      * Rempli la listeView avec les données du JSON récupéré
      */
     private void fillListView() {
-        // Json en brut pour tester le fonctionnement
-        // Ce json sera récupérer plus tard au serveur JEE
-        final String[] jsonRecu = {""};
-        final View overlay = rootView.findViewById(R.id.loader);
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected void onPreExecute() {
-                // Affiche un loading
-                overlay.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                overlay.setVisibility(View.GONE);
-                setElementsAdapter(jsonRecu[0]);
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    jsonRecu[0] = HTTPRequestManager.getListeParkings();
-                } catch (IOException e) {
-                    // Impossible de contacter le serveur
-                    // TODO afficher erreur connexion serveur
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute(); // TODO décomposer la méthode pour l'async
-
-
+        setElementsAdapter(ScreenSlidePagerActivity.listeParkingsJson);
     }
 
     private void setElementsAdapter(String json) {
@@ -121,6 +99,8 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": " + json + "}");
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
+        parks.add(new Parking("Test", 23, 14, 123.3, 23.333, 4));
+        parks.add(new Parking("Test2", 23, 14, 123.3, 23.333, 3));
 
         // Liste contenant les items
         ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
@@ -130,6 +110,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
             HashMap<String, String> map = new HashMap<String, String>();
             double occupation = (parks.get(i).getPlaceDispo() * 1.0) / (parks.get(i).getPlaces() * 1.0);
             map.put("nom", parks.get(i).getNom());
+            map.put("id", parks.get(i).getId()+"");
             map.put("distance", "1km");
             if (favoris.contains(parks.get(i).getNom())) {
                 map.put("favoris", "true");
@@ -144,11 +125,24 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
         adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_nopreview,
                 // Fait correspondre la valeur à la view de l'item layout
-                new String[]{"nom", "refreshTime", "favoris", "occupation"},
-                new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay});
+                new String[]{"nom", "refreshTime", "favoris", "occupation", "id"},
+                new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id});
         // On ajoute le binder personnalisé
         adapter.setViewBinder(new MyBinder());
         setListAdapter(adapter);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+
+        HashMap<String, String> value = (HashMap) getListAdapter().getItem(position);
+        int idP = Integer.parseInt(value.get("id"));
+        Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
+        boolean fav = Boolean.parseBoolean(value.get("favori"));
+        p.setFavoris(fav);
+        Intent intent = new Intent(getContext(), GuideActivity.class);
+        intent.putExtra("parking", p);
+        startActivity(intent);
     }
 
     /**
@@ -203,5 +197,27 @@ public class ListeParkingsFragmentSearch extends ListFragment {
             }
             return false;
         }
+    }
+    /**
+     * S'éxécute une fois que la vue est chargée
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Créé un message si il n'y a aucun élément dans la liste
+        TextView aucunParking = new TextView(getContext());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        aucunParking.setText(getResources().getString(R.string.aucun_parking));
+        aucunParking.setTextColor(Color.GRAY);
+        aucunParking.setPadding(20,20,20,20);
+        aucunParking.setLayoutParams(params);
+        aucunParking.setTextSize(15.0f);
+        aucunParking.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        LinearLayout parent = (LinearLayout) rootView.findViewById(R.id.layout_base);
+        parent.addView(aucunParking);
+        getListView().setEmptyView(aucunParking);
     }
 }

@@ -36,10 +36,11 @@ public class JsonManager {
                 // Récupération des infos du parking
                 String nom = jsonArray.getJSONObject(i).getString("nom");
                 int nbPlaces = jsonArray.getJSONObject(i).getInt("nbPlaces");
+                int id = jsonArray.getJSONObject(i).getInt("id");
                 int nbPlacesLibres = jsonArray.getJSONObject(i).getInt("nbPlacesLibres");
                 double longitude = jsonArray.getJSONObject(i).getDouble("longitude");
                 double latitude = jsonArray.getJSONObject(i).getDouble("latitude");
-                Parking p = new Parking(nom, nbPlaces, nbPlacesLibres, longitude, latitude);
+                Parking p = new Parking(nom, nbPlaces, nbPlacesLibres, longitude, latitude, id);
                 // Ajout du nouveau parking à la liste
                 parkings.add(p);
             }

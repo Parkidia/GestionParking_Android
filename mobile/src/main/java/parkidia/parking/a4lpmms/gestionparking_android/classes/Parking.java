@@ -2,10 +2,13 @@ package parkidia.parking.a4lpmms.gestionparking_android.classes;
 
 import android.graphics.Bitmap;
 
-public class Parking {
+import java.io.Serializable;
+
+public class Parking implements Serializable {
     private String nom;
     private int places;
     private int placeDispo;
+    private int id;
     private boolean favoris;
     private double longitude;
     private double latitude;
@@ -16,12 +19,21 @@ public class Parking {
         this.places = places;
         this.placeDispo = placeDispo;
     }
-    public Parking(String nom, int places, int placeDispo, double longitude, double latitude) {
+    public Parking(String nom, int places, int placeDispo, double longitude, double latitude, int id) {
         this.nom = nom;
         this.places = places;
         this.placeDispo = placeDispo;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNom() {
@@ -54,6 +66,10 @@ public class Parking {
 
     public Bitmap getMiniature() {
         return miniature;
+    }
+
+    public void setFavoris(boolean favoris) {
+        this.favoris = favoris;
     }
 
     @Override

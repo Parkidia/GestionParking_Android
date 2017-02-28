@@ -5,7 +5,9 @@
  */
 package parkidia.parking.a4lpmms.gestionparking_android.fragments;
 
+import android.app.LauncherActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,12 +26,16 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.text.Line;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.ScreenSlidePagerActivity;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
+import parkidia.parking.a4lpmms.gestionparking_android.guidage.GuideActivity;
 
 /**
  * Fragment de l'activité principale, Page d'accueil,
@@ -40,7 +46,7 @@ import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 public class ListeParkingsFragmentHome extends ListFragment {
 
     private ViewGroup rootView;
-
+    private ArrayList<Parking> parks;
     /**
      * Initialise le fragment
      *
@@ -66,11 +72,10 @@ public class ListeParkingsFragmentHome extends ListFragment {
         // TODO Récupérer le JSon du serveur pour les parkings favoris
         // Json en brut pour tester le fonctionnement
         // Ce json sera récupérer plus tard au serveur JEE
-        String jsonRecu = "[{\"nom\": \"IUT de rodez\",\"nbPlaces\": 15,\"nbPlacesLibres\": 8,\"latitude\": 11,\"longitude\": 12}, {\"nom\": \"Geant\",\"nbPlaces\": 50,\"nbPlacesLibres\": 10,\"latitude\": 15.52,\"longitude\": 16.95}]";
-
+        String jsonRecu = ScreenSlidePagerActivity.listeParkingsJson;
         SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         String jsonFav = prefs.getString("favoris", "{\"favoris\": []}");
-        ArrayList<Parking> parks = JsonManager.decodeParkings("{\"parking\": " + jsonRecu + "}");
+        parks = JsonManager.decodeParkings("{\"parking\": " + jsonRecu + "}");
         // trier les parkings et ne garder que ceux qui sont favoris
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
@@ -85,6 +90,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
             double occupation = (parks.get(i).getPlaceDispo() * 1.0) / (parks.get(i).getPlaces() * 1.0);
             map.put("nom", parks.get(i).getNom());
             map.put("distance", "1km");
+            map.put("id", parks.get(i).getId()+"");
             map.put("favoris", "true");
             map.put("refreshTime", "À l'instant");
             map.put("occupation", occupation + "");
@@ -94,8 +100,8 @@ public class ListeParkingsFragmentHome extends ListFragment {
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
         SimpleAdapter adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_nopreview,
                 // Fait correspondre la valeur à la view de l'item layout
-                new String[]{"nom", "refreshTime", "favoris", "occupation"},
-                new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay});
+                new String[]{"nom", "refreshTime", "favoris", "occupation", "id"},
+                new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id});
         // On ajoute le binder personnalisé
         adapter.setViewBinder(new MyBinder());
         this.setListAdapter(adapter);
@@ -139,6 +145,8 @@ public class ListeParkingsFragmentHome extends ListFragment {
                 parkFavoris.add(parks.get(i));
             }
         }
+        parkFavoris.add(new Parking("Test", 23, 14, 123.3, 23.333, 4));
+        parkFavoris.add(new Parking("Test2", 23, 14, 123.3, 23.333, 3));
         return parkFavoris;
     }
 
@@ -177,9 +185,10 @@ public class ListeParkingsFragmentHome extends ListFragment {
                 // On transforme le drawable en bitmap pour le manipuler
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), overlay);
                 // On créé l'overlay avec les voitures de la bonne couleur
-                Bitmap resized = Bitmap.createBitmap(bmp, 0, 0, (int) (bmp.getWidth() * dispo), bmp.getHeight());
-                icone.setImageBitmap(resized);
-
+                if (bmp.getWidth() > 0) {
+                    Bitmap resized = Bitmap.createBitmap(bmp, 0, 0, (int) (bmp.getWidth() * dispo), bmp.getHeight());
+                    icone.setImageBitmap(resized);
+                }
                 return true;
             }
             return false;
@@ -188,6 +197,14 @@ public class ListeParkingsFragmentHome extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Toast.makeText(this.getContext(), "List click", Toast.LENGTH_SHORT).show();
+
+        HashMap<String, String> value = (HashMap) getListAdapter().getItem(position);
+        int idP = Integer.parseInt(value.get("id"));
+        Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
+        boolean fav = Boolean.parseBoolean(value.get("favori"));
+        p.setFavoris(fav);
+        Intent intent = new Intent(getContext(), GuideActivity.class);
+        intent.putExtra("parking", p);
+        startActivity(intent);
     }
 }

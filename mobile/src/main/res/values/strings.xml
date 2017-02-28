@@ -16,4 +16,5 @@
 
     <string name="aucun_favoris">Vous n\'avez aucun favoris, ajoutez-en en cliquant
         sur le symbole étoile d\'un parking</string>
+    <string name="aucun_parking">Il n\'y a aucun parking à afficher, réessayez plus tard</string>
 </resources>
