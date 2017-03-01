@@ -183,6 +183,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
                     overlay = R.drawable.cars_red;
                 }
 
+
                 // On transforme le drawable en bitmap pour le manipuler
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), overlay);
                 // On créé l'overlay avec les voitures de la bonne couleur

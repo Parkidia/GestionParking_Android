@@ -1,6 +1,9 @@
 package parkidia.parking.a4lpmms.gestionparking_android.guidage.composants;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -8,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -269,16 +273,30 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
 
     public void setTextPlaceUsed(int nbPlaces){
 
-        System.out.println("iorzeurozeuoizeuoirzuoiruzoieurzeoiruzoieurzieuroizuroizuoizeuorizu"+((float)nbPlaces*100)/(float)totalPlaces);
+        float pourcentUsed = ((float)nbPlaces*100)/(float)totalPlaces;
 
-        if(((float)nbPlaces*100)/(float)totalPlaces <= 40){
+        if(pourcentUsed <= 40){
             parkPlaceFree.setTextColor(getResources().getColor(R.color.greenColor));
-        } else if(nbPlaces*100/totalPlaces <= 75) {
+            setCarsOverlay(R.drawable.cars_green, pourcentUsed);
+        } else if(pourcentUsed <= 75) {
             parkPlaceFree.setTextColor(getResources().getColor(R.color.yellowColor));
+            setCarsOverlay(R.drawable.cars_orange, pourcentUsed);
         } else {
             parkPlaceFree.setTextColor(getResources().getColor(R.color.greenColor));
+            setCarsOverlay(R.drawable.cars_red, pourcentUsed);
         }
         parkPlaceFree.setText(String.valueOf(nbPlaces));
+    }
+
+    public void setCarsOverlay(int cars, float pourcent){
+
+        Bitmap carsOverlayBitMap = BitmapFactory.decodeResource(getContext().getResources(), cars);
+
+        int newWidth = round((float)carsOverlayBitMap.getHeight() * pourcent/100.0f);
+
+        Bitmap croppedCars = Bitmap.createBitmap(carsOverlayBitMap, 0, 0 , newWidth , carsOverlayBitMap.getHeight());
+
+        ((ImageView) findViewById(R.id.carsOverlay)).setImageBitmap(croppedCars);
     }
 
     public void setTextPlaceTot(int nbPlaces){

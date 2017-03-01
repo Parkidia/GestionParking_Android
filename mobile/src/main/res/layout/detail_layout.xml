@@ -52,16 +52,19 @@
         android:layout_marginTop="@dimen/guid_content_padding_small_hor">
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:scaleType="fitEnd"
+            android:layout_gravity="right"
             android:src="@drawable/cars_bg"
             android:id="@+id/carsBG"/>
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:scaleType="fitEnd"
+            android:layout_gravity="right"
+            android:src="@drawable/cars_green"
             android:id="@+id/carsOverlay"/>
 
     </FrameLayout>
