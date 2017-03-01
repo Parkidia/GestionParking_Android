@@ -139,7 +139,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         HashMap<String, String> value = (HashMap) getListAdapter().getItem(position);
         int idP = Integer.parseInt(value.get("id"));
         Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
-        boolean fav = Boolean.parseBoolean(value.get("favori"));
+        boolean fav = Boolean.parseBoolean(value.get("favoris"));
         p.setFavoris(fav);
         // On envoie ces infos à l'activité de guidage
         Intent intent = new Intent(getContext(), GuideActivity.class);

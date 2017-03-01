@@ -3,10 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="@dimen/guid_content_padding"
     android:background="@color/colorWhite"
-    android:id="@+id/detailLinLayout">
+    android:id="@+id/detailLinLayout"
+    tools:context=".guidage.GuideActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -87,7 +89,8 @@
             android:textSize="10sp"
             android:layout_gravity="center_vertical"
             android:text="RAFRAÎCHIR"
-            android:id="@+id/refreshBT"/>
+            android:id="@+id/refreshBT"
+            android:onClick="refreshClick"/>
 
         <LinearLayout
             android:layout_width="match_parent"

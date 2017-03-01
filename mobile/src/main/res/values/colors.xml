@@ -8,4 +8,6 @@
     <color name="lightText">#8A000000</color>
     <color name="lightColor">#1F000000</color>
     <color name="greenColor">#71BC4C</color>
+    <color name="yellowColor">#F5A623</color>
+    <color name="redColor">#EC6451</color>
 </resources>

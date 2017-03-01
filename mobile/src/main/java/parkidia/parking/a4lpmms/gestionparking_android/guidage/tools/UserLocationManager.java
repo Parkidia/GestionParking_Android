@@ -211,7 +211,7 @@ public class UserLocationManager implements LocationListener {
                     .zoom(DEFAULT_ZOOM)
                     .tilt(DEFAULT_TILT)
                     .build();
-            //maps.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            maps.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
 

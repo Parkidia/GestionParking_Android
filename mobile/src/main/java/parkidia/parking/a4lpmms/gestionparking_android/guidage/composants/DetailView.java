@@ -1,17 +1,30 @@
 package parkidia.parking.a4lpmms.gestionparking_android.guidage.composants;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import parkidia.parking.a4lpmms.gestionparking_android.R;
+import parkidia.parking.a4lpmms.gestionparking_android.classes.HTTPRequestManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 import parkidia.parking.a4lpmms.gestionparking_android.constants.Constante;
+import parkidia.parking.a4lpmms.gestionparking_android.guidage.GuideActivity;
 
 import static java.lang.Math.round;
 
@@ -19,16 +32,22 @@ import static java.lang.Math.round;
  * Created by matthieubravo on 21/02/2017.
  */
 
-public class DetailView extends LinearLayout implements View.OnTouchListener {
+public class DetailView extends LinearLayout implements View.OnTouchListener, View.OnClickListener {
 
     /** Base du temps d'acualisation */
     private static final String LAST_ACTU_BASE = "Il y a ";
+
+    /** temps depuis la dernière actu */
+    private int lastActuTime = 0;
 
     /** Unité pour la durée d'actualisation */
     private static final String UNIT_TIME = " min";
 
     /** pourcentage de la vue avant qu'elle bascule en ouvert / fermé */
     private static final float BASCUL_RATIO = 1.2f;
+
+    /** activité de la vue */
+    private GuideActivity guideActivity;
 
     /** constante */
     private static final Constante constante = new Constante();
@@ -51,6 +70,9 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
     /** indicateur de total de place */
     private static TextView parkPlaceTotal;
 
+    /** bouton de rafraichisement des données */
+    private static Button refrechBt;
+
     /** coordonée enregistrée lors du down sur la vue */
     private static int yBase = Integer.MAX_VALUE;
     private static float yBaseView;
@@ -64,10 +86,15 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
     /** Offset du début lorsque la vue est d-fermée */
     private static float yDelimOffset;
 
-    public DetailView(Context context, Parking parking) {
+    /** nombre de places totale du parking */
+    private int totalPlaces = 1;
+
+    public DetailView(Context context, Parking parking, GuideActivity guideActivity) {
         super(context);
 
         setOrientation(VERTICAL);
+
+        this.guideActivity = guideActivity;
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.detail_layout, null);
@@ -83,21 +110,23 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
         delimView = view.findViewById(R.id.delimViewL);
 
         parkPlaceFree = (TextView) view.findViewById(R.id.nbPlaces);
+        setTextPlaceUsed(0);
 
         parkPlaceTotal = (TextView) view.findViewById(R.id.nbTotPlaces);
+
+        refrechBt = (Button) view.findViewById(R.id.refreshBT);
+        refrechBt.setOnClickListener(this);
         //----
 
         //remplir les données
         //----
         titleParking.setText(parking.getNom());
 
-        lastActu.setText(LAST_ACTU_BASE + "0" + UNIT_TIME);
+        lastActu.setText(LAST_ACTU_BASE + lastActuTime + UNIT_TIME);
 
-        if(parking.isFavoris()){
-            favorisBt.setImageResource(R.drawable.star_favori_full);
-        } else {
-            favorisBt.setImageResource(R.drawable.star_favori);
-        }
+        System.out.println("is favoris " + parking.isFavoris());
+
+        setStateFavorisBt(parking.isFavoris());
         //----
 
         //récupérer les actions de touché pour la gesiton du scroll
@@ -118,6 +147,9 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
                 yBaseView = getY();
             }
         }, 100);
+
+
+        timer();
     }
 
 
@@ -188,6 +220,25 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
         return true;
     }
 
+    /**
+     * timer d'actualisation
+     */
+    public void timer(){
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(60000);
+                    setTextLastActu();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
     //----------------------------------------------------------------------------------------------
     //--------------------------------------- SETTERS ----------------------------------------------
     //----------------------------------------------------------------------------------------------
@@ -196,12 +247,19 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
         this.titleParking.setText(titleParkingS);
     }
 
-    public void setTextLastActu(String lastActuS) {
-        this.lastActu.setText(lastActuS);
+    public void setTextLastActu() {
+
+        lastActuTime++;
+
+        guideActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                lastActu.setText(LAST_ACTU_BASE + lastActuTime + UNIT_TIME);
+            }
+        });
     }
 
     public void setStateFavorisBt(Boolean fav) {
-
         if (fav) {
             this.favorisBt.setImageResource(R.drawable.star_favori_full);
         } else {
@@ -210,11 +268,26 @@ public class DetailView extends LinearLayout implements View.OnTouchListener {
     }
 
     public void setTextPlaceUsed(int nbPlaces){
-        parkPlaceFree.setText(nbPlaces);
+
+        System.out.println("iorzeurozeuoizeuoirzuoiruzoieurzeoiruzoieurzieuroizuroizuoizeuorizu"+((float)nbPlaces*100)/(float)totalPlaces);
+
+        if(((float)nbPlaces*100)/(float)totalPlaces <= 40){
+            parkPlaceFree.setTextColor(getResources().getColor(R.color.greenColor));
+        } else if(nbPlaces*100/totalPlaces <= 75) {
+            parkPlaceFree.setTextColor(getResources().getColor(R.color.yellowColor));
+        } else {
+            parkPlaceFree.setTextColor(getResources().getColor(R.color.greenColor));
+        }
+        parkPlaceFree.setText(String.valueOf(nbPlaces));
     }
 
     public void setTextPlaceTot(int nbPlaces){
-        parkPlaceTotal.setText(nbPlaces);
+        totalPlaces = nbPlaces;
+        parkPlaceTotal.setText("/"+String.valueOf(nbPlaces));
     }
 
+    @Override
+    public void onClick(View v) {
+        guideActivity.refreshMap();
+    }
 }

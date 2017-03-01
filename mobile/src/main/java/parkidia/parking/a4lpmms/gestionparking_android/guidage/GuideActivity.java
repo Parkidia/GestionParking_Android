@@ -11,6 +11,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -47,6 +50,7 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
 
     /**zoom minimum autorisé sur la map*/
     private static final int MAX_ZOOM = 25;
+    private static final long INTERVAL_ACTU = 50;
 
     /**objet google map*/
     private GoogleMap map;
@@ -68,6 +72,15 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
 
     /** gestionnaire des details */
     private DetailView detailView;
+
+    /** parking actuel */
+    private Parking parking;
+
+    /** gestionnaire d'overlay */
+    private MapOverlaysManager mapOverlaysManager;
+
+    /** gestionnaire de location */
+    private UserLocationManager localisation;
 
     /**
      * Overlay de map représentant la position de l'utilisateur
@@ -97,6 +110,8 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
         //initilisation du layout de contenu de l'activité
         setContentView(R.layout.maps_view);
 
+        RelativeLayout contentLayout = (RelativeLayout) findViewById(R.id.mapsView);
+
         //définir le manager de la boussole
         compassManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         compassManager.registerListener(this, compassManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
@@ -111,10 +126,15 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
         //récupération des elements envoyé par l'activité précédente
         Intent intent = getIntent();
 
-        Parking parking = (Parking) intent.getSerializableExtra("parking");
+        this.parking = (Parking) intent.getSerializableExtra("parking");
 
         //création du layout de detail du parking
-        this.detailView = new DetailView(getApplicationContext(), parking);
+        this.detailView = new DetailView(getApplicationContext(), parking, this);
+        LinearLayout.LayoutParams paramsDV = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.detailView.setPadding(30,0,30,0);
+        this.detailView.setLayoutParams(paramsDV);
+
+        contentLayout.addView(detailView);
     }
 
     /**
@@ -128,14 +148,11 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
         map.setMaxZoomPreference(MAX_ZOOM);
 
         //récupération des coordonées de l'utilsateur
-        UserLocationManager localisation = new UserLocationManager(this);
-        Location posCurr = localisation.getLocation(500);
+        localisation = new UserLocationManager(this);
+        Location posCurr = localisation.getLocation(INTERVAL_ACTU);
         userLocation = new LatLng(localisation.getLatitude(), localisation.getLongitude());
 
-        //création de la voiture représentant l'utilisateur
-        Bitmap userCarBitMap = userCarIMG.getVehicule();
-
-        //caché les ineractions par défault de la map
+        //caché les interactions par défault de la map
         map.getUiSettings().setMapToolbarEnabled(false);
         map.getUiSettings().setCompassEnabled(false);
 
@@ -147,11 +164,7 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
         map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         //ajout de la voiture représentant l'utilsateur
-        userLocOverlay = map.addGroundOverlay(new GroundOverlayOptions()
-                .image(BitmapDescriptorFactory.fromBitmap(userCarBitMap))
-                .bearing(0.0f) //rotation par default de 0 degres
-                .anchor(0.5f,0.5f) //mettre le point d'ancrage au milieu de l'image
-                .position(userLocation, userCarIMG.getWIDTH(), userCarIMG.getHEIGHT()));
+        addUserOverlay();
 
         // Construie une caméra avec les paramètres précédement définit
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -161,7 +174,7 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
                 .build();
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        MapOverlaysManager mapOverlaysManager = new MapOverlaysManager(getApplicationContext(), map, detailView);
+        mapOverlaysManager = new MapOverlaysManager(getApplicationContext(), map, detailView, parking.getId(), this);
 
         //passer l'objet au gestionnaire de localisation pour gérer l'acutalisation de la position
         localisation.setUserPlacemark(userLocOverlay);
@@ -212,11 +225,44 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     /**
+     * ajouter l'overlay de l'utilisateur
+     */
+    public void addUserOverlay(){
+        System.out.println("bite");
+
+        //création de la voiture représentant l'utilisateur
+        Bitmap userCarBitMap = userCarIMG.getVehicule();
+
+        userLocOverlay = map.addGroundOverlay(new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromBitmap(userCarBitMap))
+                .bearing(0.0f) //rotation par default de 0 degres
+                .anchor(0.5f,0.5f) //mettre le point d'ancrage au milieu de l'image
+                .position(userLocation, userCarIMG.getWIDTH(), userCarIMG.getHEIGHT()));
+
+        localisation.setUserPlacemark(userLocOverlay);
+
+        // Construie une caméra avec les paramètres précédement définit
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(userLocation)
+                .zoom(DEFAULT_ZOOM)
+                .tilt(DEFAULT_TILT)
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    /**
      * pas utilisé
      * @param sensor
      * @param accuracy
      */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    /**
+     * recharger la carte
+     */
+    public void refreshMap() {
+        mapOverlaysManager.decodeJson();
     }
 }
