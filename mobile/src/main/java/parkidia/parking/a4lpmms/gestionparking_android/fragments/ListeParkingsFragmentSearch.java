@@ -119,8 +119,12 @@ public class ListeParkingsFragmentSearch extends ListFragment {
             items.add(map);
         }
 
-        // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
-        adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_nopreview,
+        // Affichage avec ou sans miniature selon les paramètres
+        int layout = ScreenSlidePagerActivity.preferences.getBoolean("miniature", false)
+                ? R.layout.item_park_preview : R.layout.item_park_nopreview;
+
+        // Met en place les éléments dans la liste
+        adapter = new SimpleAdapter(getContext(), items, layout,
                 // Fait correspondre la valeur à la view de l'item layout
                 new String[]{"nom", "refreshTime", "favoris", "occupation", "id"},
                 new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id});
@@ -131,14 +135,16 @@ public class ListeParkingsFragmentSearch extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-
+        // On récupère les infos de l'élement sélectionné
         HashMap<String, String> value = (HashMap) getListAdapter().getItem(position);
         int idP = Integer.parseInt(value.get("id"));
         Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
         boolean fav = Boolean.parseBoolean(value.get("favori"));
         p.setFavoris(fav);
+        // On envoie ces infos à l'activité de guidage
         Intent intent = new Intent(getContext(), GuideActivity.class);
         intent.putExtra("parking", p);
+        // Démarre l'activité de guidage
         startActivity(intent);
     }
 
@@ -147,8 +153,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
      */
     class MyBinder implements SimpleAdapter.ViewBinder {
         /**
-         * TODO commenter
-         *
+         * Set les valeurs aux éléments graphiques de la liste
          * @param view
          * @param data
          * @param textRepresentation

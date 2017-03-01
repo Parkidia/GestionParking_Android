@@ -18,4 +18,8 @@
         sur le symbole étoile d\'un parking</string>
     <string name="aucun_parking">Il n\'y a aucun parking à afficher, réessayez plus tard</string>
     <string name="refresh_btn">Rafraichir</string>
+    <string name="distance_param">Distance pour les parkings proches</string>
+    <string name="proximite_choix">Choix de la proximité</string>
+    <string name="label_valider">Valider</string>
+    <string name="label_km">km</string>
 </resources>

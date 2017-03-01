@@ -120,8 +120,11 @@ public class ListeParkingsFragmentProches extends ListFragment {
 
         }
 
-        // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_preview,
+        // Affichage avec ou sans miniature selon les paramètres
+        int layout = ScreenSlidePagerActivity.preferences.getBoolean("miniature", false)
+                ? R.layout.item_park_preview : R.layout.item_park_nopreview;
+        // Met en place les éléments dans la liste
+        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, layout,
                 // Fait correspondre la valeur à la view de l'item layout
                 new String[]{"nom", "refreshTime", "favoris", "occupation", "id", "distance"},
                 new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id, R.id.distance});

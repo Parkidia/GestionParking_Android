@@ -5,6 +5,8 @@
  */
 package parkidia.parking.a4lpmms.gestionparking_android;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,12 +18,13 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.IOException;
 
 import parkidia.parking.a4lpmms.gestionparking_android.classes.HTTPRequestManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
@@ -32,21 +35,30 @@ import parkidia.parking.a4lpmms.gestionparking_android.fragments.ParametersFragm
 
 /**
  * Activité principale, affiche les différentes listes de parking
+ *
  * @author Guillaume BERANRD
  */
 public class ScreenSlidePagerActivity extends FragmentActivity {
-    /** Nombre de pages dans le slider */
+    /**
+     * Nombre de pages dans le slider
+     */
     private static final int NUM_PAGES = 4;
-    /** Pager de l'activité, récupère les demande de changement de page et animations */
+    /**
+     * Pager de l'activité, récupère les demande de changement de page et animations
+     */
     private ViewPager mPager;
-    /** Fourni la page au pager */
+    /**
+     * Fourni la page au pager
+     */
     private PagerAdapter mPagerAdapter;
-    private SharedPreferences preferences;
+    public static SharedPreferences preferences;
     public static String listeParkingsJson;
     /* Page actuelle */
     private int currentPage = 0;
+
     /**
      * Initialise le viewPager qui va gérer les différentes pages de l'activité
+     *
      * @param savedInstanceState Etat de l'instance
      */
     @Override
@@ -59,8 +71,10 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
+
         // Préférences utilisateur
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
+
         // On ajoute un listener sur le viewpager pour "éclairer" l'icone correspondante
         // à la page actuelle
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -140,8 +154,6 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                     listeParkingsJson = HTTPRequestManager.getListeParkings();
                     Log.e("RECU", listeParkingsJson);
                 } catch (Exception e) {
-                    // Impossible de contacter le serveur
-                    // TODO afficher erreur connexion serveur
                     listeParkingsJson = "";
                     e.printStackTrace();
                 }
@@ -163,6 +175,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
     /**
      * Positionne la page sur le page position
+     *
      * @param position position de la page à laquelle on veut accéder
      */
     public void scrollTo(int position) {
@@ -171,18 +184,52 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
     /**
      * Clic sur le bouton Rafraîchir d'une liste
+     *
      * @param v TextView rafraichir de la listeView
      */
     public void clicRefresh(View v) {
-        // TODO rafraichir la liste sélectionnée
+        // Recharge les données
         loadData();
+    }
 
-        Toast.makeText(this, "Click sur refresh", Toast.LENGTH_SHORT).show();
+    /**
+     * Quand l'utilisateur clique sur le bouton distance des paramètres
+     * @param v bouton
+     */
+    public void clicParamDistance(View v) {
+        final View view = getLayoutInflater().inflate(R.layout.alert_params, null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this).setView(view);
+        alert.setTitle(R.string.proximite_choix);
+
+        final EditText saisie = (EditText) view.findViewById(R.id.paramProximite);
+        saisie.setText(String.valueOf(preferences.getInt("distance", 3)));
+        alert.setPositiveButton(getString(R.string.label_valider), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // enregistrer dans les préférences
+                int distanceSaisie = 3;
+                try {
+                    distanceSaisie = Integer.parseInt(saisie.getText().toString());
+                } catch (Exception e) {
+                }
+                if (distanceSaisie > 0) {
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putInt("distance", distanceSaisie);
+                    editor.commit();
+                } else {
+                    Toast.makeText(ScreenSlidePagerActivity.this,
+                            "La distance ne peut pas être négative", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        alert.create().show();
     }
 
     /**
      * Clic sur le bouton "étoile" d'ajout aux favoris
      * Ajoute le parking aux favoris, ou l'enlève s'il est déjà en favoris
+     *
      * @param view
      */
     public void clicFavorite(View view) {
@@ -273,6 +320,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         /**
          * Nombre de pages
+         *
          * @return le nombre de pages du viewpager
          */
         @Override

@@ -66,10 +66,8 @@ public class ListeParkingsFragmentHome extends ListFragment {
 
     /**
      * Rempli la listeView avec les données du JSON récupéré
-     * TODO Récurérer ces infos du JSON
      */
     private void fillListView() {
-        // TODO Récupérer le JSon du serveur pour les parkings favoris
         // Json en brut pour tester le fonctionnement
         // Ce json sera récupérer plus tard au serveur JEE
         String jsonRecu = ScreenSlidePagerActivity.listeParkingsJson;
@@ -97,8 +95,12 @@ public class ListeParkingsFragmentHome extends ListFragment {
             items.add(map);
         }
 
+        // Affichage avec ou sans miniature selon les paramètres
+        int layout = ScreenSlidePagerActivity.preferences.getBoolean("miniature", false)
+                ? R.layout.item_park_preview : R.layout.item_park_nopreview;
+
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, R.layout.item_park_nopreview,
+        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, layout,
                 // Fait correspondre la valeur à la view de l'item layout
                 new String[]{"nom", "refreshTime", "favoris", "occupation", "id"},
                 new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id});
