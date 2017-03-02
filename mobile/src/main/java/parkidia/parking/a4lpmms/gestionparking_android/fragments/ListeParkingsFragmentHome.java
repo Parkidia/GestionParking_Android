@@ -5,7 +5,6 @@
  */
 package parkidia.parking.a4lpmms.gestionparking_android.fragments;
 
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,9 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.vision.text.Line;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +56,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings, container, false);
 
         // Complète la liste avec les parkings favoris
+        parks = ScreenSlidePagerActivity.parkings;
         fillListView();
         return rootView;
     }
@@ -70,21 +67,19 @@ public class ListeParkingsFragmentHome extends ListFragment {
     private void fillListView() {
         // Json en brut pour tester le fonctionnement
         // Ce json sera récupérer plus tard au serveur JEE
-        String jsonRecu = ScreenSlidePagerActivity.listeParkingsJson;
         SharedPreferences prefs = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         String jsonFav = prefs.getString("favoris", "{\"favoris\": []}");
-        parks = JsonManager.decodeParkings("{\"parking\": " + jsonRecu + "}");
         // trier les parkings et ne garder que ceux qui sont favoris
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
         parks = trierFavoris(parks, favoris);
 
         // Liste contenant les items
-        ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
+        ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
 
         for (int i = 0; i < parks.size(); i++) {
             // Contient la définition de chaque item
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, Object> map = new HashMap<String, Object>();
             double occupation = (parks.get(i).getPlaceDispo() * 1.0) / (parks.get(i).getPlaces() * 1.0);
             map.put("nom", parks.get(i).getNom());
             map.put("distance", "1km");
@@ -92,18 +87,24 @@ public class ListeParkingsFragmentHome extends ListFragment {
             map.put("favoris", "true");
             map.put("refreshTime", "À l'instant");
             map.put("occupation", occupation + "");
+            if (prefs.getBoolean("miniature", false)) {
+                map.put("miniature", parks.get(i).getMiniature());
+            }
             items.add(map);
         }
 
         // Affichage avec ou sans miniature selon les paramètres
-        int layout = ScreenSlidePagerActivity.preferences.getBoolean("miniature", false)
-                ? R.layout.item_park_preview : R.layout.item_park_nopreview;
+        int layout = R.layout.item_park_nopreview;
+        String[] bindName = new String[]{"nom", "refreshTime", "favoris", "occupation", "id"};
+        int[] bindRes = new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id};
+        if (ScreenSlidePagerActivity.preferences.getBoolean("miniature", false)) {
+            layout = R.layout.item_park_preview;
+            bindName = new String[]{"nom", "refreshTime", "favoris", "occupation", "id", "miniature"};
+            bindRes = new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id, R.id.preview};
+        }
 
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, layout,
-                // Fait correspondre la valeur à la view de l'item layout
-                new String[]{"nom", "refreshTime", "favoris", "occupation", "id"},
-                new int[]{R.id.nomPark, R.id.refreshTime, R.id.favorite, R.id.overlay, R.id.id});
+        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, layout, bindName, bindRes);
         // On ajoute le binder personnalisé
         adapter.setViewBinder(new MyBinder());
         this.setListAdapter(adapter);
@@ -182,8 +183,6 @@ public class ListeParkingsFragmentHome extends ListFragment {
                 } else {
                     overlay = R.drawable.cars_red;
                 }
-
-
                 // On transforme le drawable en bitmap pour le manipuler
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), overlay);
                 // On créé l'overlay avec les voitures de la bonne couleur
@@ -192,6 +191,11 @@ public class ListeParkingsFragmentHome extends ListFragment {
                     icone.setImageBitmap(resized);
                 }
                 return true;
+            }
+            if (view.getId() == R.id.preview) {
+                // Ici binder l'affiche
+                ImageView img = (ImageView) view;
+                img.setImageBitmap((Bitmap) data);
             }
             return false;
         }

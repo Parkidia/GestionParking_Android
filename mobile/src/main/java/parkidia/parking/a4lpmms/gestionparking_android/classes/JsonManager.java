@@ -68,8 +68,7 @@ public class JsonManager {
         } catch (JSONException e) {
             Log.e("JSON", e.getMessage());
         }
-        // Si une erreur s'est produite on return null
-        return null;
+        return "";
     }
 
     /**
@@ -93,8 +92,7 @@ public class JsonManager {
         } catch (JSONException e) {
             Log.e("JSON", "Format JSON incorrect");
         }
-        // Si une erreur s'est produite on return null
-        return null;
+        return "";
     }
 
     /**

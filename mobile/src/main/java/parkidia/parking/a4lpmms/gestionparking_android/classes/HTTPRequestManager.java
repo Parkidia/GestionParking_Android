@@ -2,8 +2,11 @@ package parkidia.parking.a4lpmms.gestionparking_android.classes;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -106,15 +109,11 @@ public class HTTPRequestManager {
 
         try {
             url = new URL(URL_SERVEUR + "parking/photo/" + parkingId);
-            http = (HttpURLConnection) url.openConnection();
 
-            http.setRequestMethod("GET");
-            http.setConnectTimeout(5000);
-            http.setReadTimeout(5000);
-
-            return Bitmap.createScaledBitmap(BitmapFactory.decodeStream(http.getInputStream()), 675, 550, false);
-        } catch (IOException e) {
-            throw new IOException(e);
+            return BitmapFactory.decodeStream(url.openConnection().getInputStream());
+        } catch (FileNotFoundException e) {
+            Log.e("BUG", e.getMessage());
+            return null;
         } finally {
             if (http != null) {
                 http.disconnect();

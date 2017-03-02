@@ -8,6 +8,7 @@ package parkidia.parking.a4lpmms.gestionparking_android;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,8 +27,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import parkidia.parking.a4lpmms.gestionparking_android.classes.HTTPRequestManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.JsonManager;
+import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentHome;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentProches;
 import parkidia.parking.a4lpmms.gestionparking_android.fragments.ListeParkingsFragmentSearch;
@@ -52,7 +58,8 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
      */
     private PagerAdapter mPagerAdapter;
     public static SharedPreferences preferences;
-    public static String listeParkingsJson;
+    public static String listeParkingsJson = "";
+    public static ArrayList<Parking> parkings;
     /* Page actuelle */
     private int currentPage = 0;
 
@@ -71,6 +78,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
+        parkings = new ArrayList<>();
 
         // Préférences utilisateur
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
@@ -151,10 +159,18 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
             @Override
             protected Void doInBackground(Void... voids) {
                 try {
+                    // Charge le JSON du serveur JEE
                     listeParkingsJson = HTTPRequestManager.getListeParkings();
+                    parkings = JsonManager.decodeParkings("{\"parking\": " + listeParkingsJson + "}");
+                    // Charge les images du serveur JEE
+                    if (preferences.getBoolean("miniature", false)) {
+                        for (int i = 0; i < parkings.size(); i++) {
+                            Bitmap miniature = HTTPRequestManager.getMiniature(parkings.get(i).getId());
+                            parkings.get(i).setMiniature(miniature);
+                        }
+                    }
                     Log.e("RECU", listeParkingsJson);
                 } catch (Exception e) {
-                    listeParkingsJson = "";
                     e.printStackTrace();
                 }
                 return null;
