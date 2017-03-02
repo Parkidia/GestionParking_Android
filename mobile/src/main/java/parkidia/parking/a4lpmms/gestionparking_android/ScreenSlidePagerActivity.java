@@ -75,8 +75,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         // Instantie le viewPager
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-        mPager.setAdapter(mPagerAdapter);
+        reloadFragments();
 
         parkings = new ArrayList<>();
 

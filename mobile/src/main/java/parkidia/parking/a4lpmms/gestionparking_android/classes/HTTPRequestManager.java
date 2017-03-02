@@ -106,6 +106,9 @@ public class HTTPRequestManager {
     public static Bitmap getMiniature(int parkingId) throws IOException {
         URL url = null;
         HttpURLConnection http = null;
+        http.setRequestMethod("GET");
+        http.setConnectTimeout(5000);
+        http.setReadTimeout(5000);
 
         try {
             url = new URL(URL_SERVEUR + "parking/photo/" + parkingId);

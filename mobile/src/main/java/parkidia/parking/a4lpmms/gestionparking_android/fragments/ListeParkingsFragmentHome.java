@@ -42,7 +42,6 @@ import parkidia.parking.a4lpmms.gestionparking_android.guidage.GuideActivity;
 public class ListeParkingsFragmentHome extends ListFragment {
 
     private ViewGroup rootView;
-    private ArrayList<Parking> parks;
     /**
      * Initialise le fragment
      *
@@ -55,8 +54,6 @@ public class ListeParkingsFragmentHome extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_liste_parkings, container, false);
 
-        // Complète la liste avec les parkings favoris
-        parks = ScreenSlidePagerActivity.parkings;
         fillListView();
         return rootView;
     }
@@ -72,7 +69,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
         // trier les parkings et ne garder que ceux qui sont favoris
         ArrayList<String> favoris = JsonManager.decodeFavoris(jsonFav);
 
-        parks = trierFavoris(parks, favoris);
+        ArrayList<Parking> parks = trierFavoris(ScreenSlidePagerActivity.parkings, favoris);
 
         // Liste contenant les items
         ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
@@ -80,7 +77,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
         for (int i = 0; i < parks.size(); i++) {
             // Contient la définition de chaque item
             HashMap<String, Object> map = new HashMap<String, Object>();
-            double occupation = (parks.get(i).getPlaceDispo() * 1.0) / (parks.get(i).getPlaces() * 1.0);
+            double occupation = 1-(parks.get(i).getPlaceDispo() * 1.0) / (parks.get(i).getPlaces() * 1.0);
             map.put("nom", parks.get(i).getNom());
             map.put("distance", "1km");
             map.put("id", parks.get(i).getId()+"");
