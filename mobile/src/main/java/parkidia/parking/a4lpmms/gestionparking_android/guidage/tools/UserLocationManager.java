@@ -32,6 +32,10 @@ public class UserLocationManager implements LocationListener {
 
     //TODO commenter
 
+    /** distance miniale pour l'actualisation de la position */
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
+
+    /** contexte actuel de l'application */
     private Context context;
 
     /**zoom auquel la map est lancée*/
@@ -40,21 +44,23 @@ public class UserLocationManager implements LocationListener {
     /**angle de vision de la map au lancement*/
     private static final int DEFAULT_TILT = 30;
 
-    boolean isGPSEnabled = false;
-    boolean isNetworkEnabled = false;
-    boolean canGetLocation = false;
+    /** état des services de localisation */
+    private boolean isGPSEnabled = false;
+    private boolean isNetworkEnabled = false;
+    private boolean canGetLocation = false;
 
-    Location location;
+    /** information de localisation */
+    private Location location;
+    private double latitude;
+    private double longitude;
 
-    double latitude;
-    double longitude;
-
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
-
+    /** gestionnaire de location */
     protected LocationManager locationManager;
 
+    /** overlay représentant l'utilisateur */
     private GroundOverlay userPlacemark;
 
+    /** map actuelle de l'application */
     private GoogleMap maps;
 
     /**
@@ -73,15 +79,20 @@ public class UserLocationManager implements LocationListener {
     public Location getLocation(long updateInterval) {
         try {
 
+            //récupération de si les moyens de localisation sont activés
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
+            //afficher un message pour dire à l'utilisateur que c'est pas activé
             if (!isGPSEnabled && !isNetworkEnabled) {
                 showSettingsAlert();
             } else {
                 this.canGetLocation = true;
+                //obtenir la localisation par le network
                 if (isNetworkEnabled) {
+
+                    //gestion de permission
                     if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         showSettingsAlert();
                     }
@@ -97,7 +108,7 @@ public class UserLocationManager implements LocationListener {
                         }
                     }
                 }
-
+                //obtenir la localisation par le GPS
                 if (isGPSEnabled) {
                     if (location == null) {
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, updateInterval, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
@@ -136,6 +147,50 @@ public class UserLocationManager implements LocationListener {
             locationManager.removeUpdates(UserLocationManager.this);
         }
     }
+
+
+    /**
+     * Lorsque la localisation de l'utilisateur a changée,
+     * cette méthode est appelée
+     * @param location, nouvelle localisation de l'utilisateur
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+
+        if(userPlacemark != null && maps != null) {
+
+            LatLng userLoc = new LatLng(location.getLatitude(), location.getLongitude());
+
+            userPlacemark.setPosition(userLoc);
+
+            //centrer la map sur la nouvelle localisation de l'utilisateur
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(userLoc)
+                    .zoom(DEFAULT_ZOOM)
+                    .tilt(DEFAULT_TILT)
+                    .build();
+            maps.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //------------------------------------------ GETTERS -------------------------------------------
+    //----------------------------------------------------------------------------------------------
+
 
     public double getLatitude()
     {
@@ -191,49 +246,15 @@ public class UserLocationManager implements LocationListener {
     }
 
 
-    /**
-     * Lorsque la localisation de l'utilisateur a changée,
-     * cette méthode est appelée
-     * @param location, nouvelle localisation de l'utilisateur
-     */
-    @Override
-    public void onLocationChanged(Location location) {
-
-        if(userPlacemark != null && maps != null) {
-
-            LatLng userLoc = new LatLng(location.getLatitude(), location.getLongitude());
-
-            userPlacemark.setPosition(userLoc);
-
-            //centrer la map sur la nouvelle localisation de l'utilisateur
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(userLoc)
-                    .zoom(DEFAULT_ZOOM)
-                    .tilt(DEFAULT_TILT)
-                    .build();
-            maps.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-    }
-
-
     //----------------------------------------------------------------------------------------------
     //----------------------------------------- SETTERS --------------------------------------------
     //----------------------------------------------------------------------------------------------
 
+    /**
+     * définir l'overlay de l'utilisateur pour pouvoir le gérer lors du changement
+     * de localisation
+     * @param userPlacemark
+     */
     public void setUserPlacemark(GroundOverlay userPlacemark){
         this.userPlacemark = userPlacemark;
     }
