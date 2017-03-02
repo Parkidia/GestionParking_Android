@@ -1,12 +1,14 @@
 package parkidia.parking.a4lpmms.gestionparking_android.guidage.tools;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import parkidia.parking.a4lpmms.gestionparking_android.R;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.HTTPRequestManager;
 import parkidia.parking.a4lpmms.gestionparking_android.guidage.GuideActivity;
 import parkidia.parking.a4lpmms.gestionparking_android.guidage.composants.DetailView;
@@ -112,12 +115,22 @@ public class MapOverlaysManager {
                         System.out.println("---------------------------------------------------------------");
                         System.out.println(lastStatut.getBoolean("disponible"));
 
+
+                        //orientation de la place en cours (par rapport au nord)
+                        float degree = place.getInt("orientation");
+
+                        //récupération de l'objet localisation dans place
+                        //JSONObject location = place.getJSONObject("localisation");
+
+                        //localisation de la place actuelle
+                        Double lat = place.getDouble("latitude");
+                        Double lng = place.getDouble("longitude");
+                        System.out.println("-----------------------------------");
+                        System.out.println(lat + "  " + lng + "  ");
+
+
                         //si la place est occupée alors créer une voiture et la placer sur cette dernière
                         if(!lastStatut.getBoolean("disponible")) {
-
-                            //orientation de la place en cours (par rapport au nord)
-                            float degree = place.getInt("orientation");
-
                             //couleur de la voiture occupant la place
                             // [rouge, vert, bleu] -> si présent
                             // [null] -> si information vide
@@ -133,15 +146,6 @@ public class MapOverlaysManager {
                                 blue = Integer.parseInt(carColor[2].trim());
                             }
 
-                            //récupération de l'objet localisation dans place
-                           // JSONObject location = place.getJSONObject("localisation");
-
-                            //localisation de la place actuelle
-                            Double lat = place.getDouble("latitude");
-                            Double lng = place.getDouble("longitude");
-                            System.out.println("-----------------------------------");
-                            System.out.println(lat + "  " + lng + "  ");
-
                             //création d'une voiture avec les informations récupérées précédemment
                             ParkPlace parkPlace = new ParkPlace(context, red, green, blue, lat, lng, degree);
 
@@ -151,90 +155,32 @@ public class MapOverlaysManager {
                                     .bearing(parkPlace.getDegrees())
                                     .anchor(0.5f, 0.5f)
                                     .position(parkPlace.getLatLng(), parkPlace.getWIDTH(), parkPlace.getHEIGHT()));
+                        } else { //si libre alors mettre un overlay vert
+                            //ajouter la voiture créée à la map
+                            //TODO gérer fans parkplace avec un objet par default
+                            map.addGroundOverlay(new GroundOverlayOptions()
+                                    .image(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(context.getResources(),
+                                            R.drawable.place_libre)))
+                                    .bearing(degree)
+                                    .anchor(0.5f, 0.5f)
+                                    .position(new LatLng(lat, lng), 4.0f*0.5f, 4));
                         }
 
                     }
 
                     //informations de places du parking
-                    detailView.setTextPlaceTot(jsonObj.getInt("nbPlaces"));
+                    System.out.println("jsonObj.getInt" +jsonObj.getInt("nbPlacesLibres"));
+                    detailView.setPlaceTot(jsonObj.getInt("nbPlaces"));
                     detailView.setTextPlaceUsed(jsonObj.getInt("nbPlacesLibres"));
+
                 } catch (JSONException e) {
                     //erreurs liées à la lecture du JSON
                     e.printStackTrace();
                 } catch (Exception e) {
                     Log.e("Erro","Something whent wrong");
+                    e.printStackTrace();
                 }
             }
         }.execute();
-
-        /*String jsonRecu =
-
-        //simulation du json recsu
-        String jsonRecu = "{\n" +
-                "    \"latitude\": 11,\n" +
-                "    \"longitude\": 12,\n" +
-                "    \"id\": 1,\n" +
-                "    \"nom\": \"IUT de rodez\",\n" +
-                "    \"places\": [\n" +
-                "        {\n" +
-                "            \"minX\": 10,\n" +
-                "            \"minY\": 11,\n" +
-                "            \"maxX\": 12,\n" +
-                "            \"maxY\": 13,\n" +
-                "            \"orientation\": 217,\n" +
-                "            \"nom\": \"P01\",\n" +
-                "            \"handicapee\": false,\n" +
-                "            \"dernierStatut\": {\n" +
-                "                \"date\": 1487014354986,\n" +
-                "                \"couleurVoiture\": \"12,12,12\",\n" +
-                "                \"disponible\": true\n" +
-                "            },\n" +
-                "            \"localisation\": {\n" +
-                "                \"latitude\": 44.360105,\n" +
-                "                \"longitude\": 2.577220\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"minX\": 10,\n" +
-                "            \"minY\": 11,\n" +
-                "            \"maxX\": 12,\n" +
-                "            \"maxY\": 13,\n" +
-                "            \"orientation\": 157,\n" +
-                "            \"nom\": \"P02\",\n" +
-                "            \"handicapee\": true,\n" +
-                "            \"dernierStatut\": {\n" +
-                "                \"date\": 1487170140472,\n" +
-                "                \"couleurVoiture\": \"200,0,90\",\n" +
-                "                \"disponible\": true\n" +
-                "            },\n" +
-                "            \"localisation\": {\n" +
-                "                \"latitude\": 44.359851,\n" +
-                "                \"longitude\": 2.577702\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"minX\": 14,\n" +
-                "            \"minY\": 15,\n" +
-                "            \"maxX\": 16,\n" +
-                "            \"maxY\": 18,\n" +
-                "            \"orientation\": 157,\n" +
-                "            \"nom\": \"P03\",\n" +
-                "            \"handicapee\": true,\n" +
-                "            \"dernierStatut\": {\n" +
-                "                \"date\": 1487170160471,\n" +
-                "                \"couleurVoiture\": \"200,200,200\",\n" +
-                "                \"disponible\": true\n" +
-                "            },\n" +
-                "            \"localisation\": {\n" +
-                "                \"latitude\": 44.359857,\n" +
-                "                \"longitude\": 2.577727\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"nbPlaces\": 3,\n" +
-                "    \"nbPlacesLibres\": 3\n" +
-                "}";
-
-*/
     }
 }

@@ -231,7 +231,6 @@ public class GuideActivity extends FragmentActivity implements OnMapReadyCallbac
      * ajouter l'overlay de l'utilisateur
      */
     public void addUserOverlay(){
-        System.out.println("bite");
 
         //création de la voiture représentant l'utilisateur
         Bitmap userCarBitMap = userCarIMG.getVehicule();

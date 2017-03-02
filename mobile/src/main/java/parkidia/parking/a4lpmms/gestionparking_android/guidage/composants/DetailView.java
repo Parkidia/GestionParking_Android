@@ -3,8 +3,6 @@ package parkidia.parking.a4lpmms.gestionparking_android.guidage.composants;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,17 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 import parkidia.parking.a4lpmms.gestionparking_android.R;
-import parkidia.parking.a4lpmms.gestionparking_android.classes.HTTPRequestManager;
 import parkidia.parking.a4lpmms.gestionparking_android.classes.Parking;
 import parkidia.parking.a4lpmms.gestionparking_android.constants.Constante;
 import parkidia.parking.a4lpmms.gestionparking_android.guidage.GuideActivity;
@@ -56,6 +44,9 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
     /** constante */
     private static final Constante constante = new Constante();
 
+    /** vue de contenu */
+    private View contentView;
+
     /** Titre du parking */
     private static TextView titleParking;
 
@@ -63,7 +54,7 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
     private static TextView lastActu;
 
     /** Étoile de favoris */
-    private static ImageButton favorisBt;
+    private static ImageView favorisBt;
 
     /** Barre de délimitation */
     private static View delimView;
@@ -72,7 +63,7 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
     private static TextView parkPlaceFree;
 
     /** indicateur de total de place */
-    private static TextView parkPlaceTotal;
+    private static TextView extPlaces;
 
     /** bouton de rafraichisement des données */
     private static Button refrechBt;
@@ -101,24 +92,23 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
         this.guideActivity = guideActivity;
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.detail_layout, null);
+        contentView = inflater.inflate(R.layout.detail_layout, null);
 
         //récupération des éléments créés dans le XML
         //----
-        titleParking = (TextView) view.findViewById(R.id.titleParking);
+        titleParking = (TextView) contentView.findViewById(R.id.titleParking);
 
-        lastActu = (TextView) view.findViewById(R.id.actuTV);
+        lastActu = (TextView) contentView.findViewById(R.id.actuTV);
 
-        favorisBt = (ImageButton) view.findViewById(R.id.favBt);
+        favorisBt = (ImageView) contentView.findViewById(R.id.favBt);
 
-        delimView = view.findViewById(R.id.delimViewL);
+        delimView = contentView.findViewById(R.id.delimViewL);
 
-        parkPlaceFree = (TextView) view.findViewById(R.id.nbPlaces);
-        setTextPlaceUsed(0);
+        parkPlaceFree = (TextView) contentView.findViewById(R.id.nbPlaces);
 
-        parkPlaceTotal = (TextView) view.findViewById(R.id.nbTotPlaces);
+        extPlaces = (TextView) contentView.findViewById(R.id.nbTotPlaces);
 
-        refrechBt = (Button) view.findViewById(R.id.refreshBT);
+        refrechBt = (Button) contentView.findViewById(R.id.refreshBT);
         refrechBt.setOnClickListener(this);
         //----
 
@@ -136,7 +126,7 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
         //récupérer les actions de touché pour la gesiton du scroll
         setOnTouchListener(this);
 
-        addView(view);
+        addView(contentView);
 
         //attendre la création de la vue avant de récupérer le Y de la vue de délimitation
         //et de positionner au bon endrait la vue de detail
@@ -225,7 +215,7 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
     }
 
     /**
-     * timer d'actualisation
+     * timer d'actualisation du temps passé depuis la dernière actu
      */
     public void timer(){
 
@@ -233,7 +223,7 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
             @Override
             public void run() {
                 try {
-                    Thread.sleep(60000);
+                    Thread.sleep(60000); //attente d'une minute soit 60000ms
                     setTextLastActu();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -271,37 +261,67 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
         }
     }
 
+    /**
+     * Définir le texte du textview
+     * représenté par le nombre de place libre
+     * @param nbPlaces
+     */
     public void setTextPlaceUsed(int nbPlaces){
 
-        float pourcentUsed = ((float)nbPlaces*100)/(float)totalPlaces;
+        //définir le texte
+        parkPlaceFree.setText(String.valueOf(nbPlaces));
 
+        //calcul du pourcentage du parking utilisé
+        float pourcentUsed = ((float)nbPlaces*100.0f)/(float)totalPlaces;
+
+        if(nbPlaces > 1) {
+            extPlaces.setText("places libres");
+        } else {
+            extPlaces.setText("place libre");
+        }
+
+        //choix des couleurs du texte et des voitures
         if(pourcentUsed <= 40){
-            parkPlaceFree.setTextColor(getResources().getColor(R.color.greenColor));
-            setCarsOverlay(R.drawable.cars_green, pourcentUsed);
+            parkPlaceFree.setTextColor(getResources().getColor(R.color.redColor));
+            setCarsOverlay(R.drawable.cars_red, pourcentUsed);
         } else if(pourcentUsed <= 75) {
             parkPlaceFree.setTextColor(getResources().getColor(R.color.yellowColor));
             setCarsOverlay(R.drawable.cars_orange, pourcentUsed);
         } else {
             parkPlaceFree.setTextColor(getResources().getColor(R.color.greenColor));
-            setCarsOverlay(R.drawable.cars_red, pourcentUsed);
+            setCarsOverlay(R.drawable.cars_green, pourcentUsed);
         }
-        parkPlaceFree.setText(String.valueOf(nbPlaces));
+
     }
 
+    /**
+     * définition des voitures représentant l'occupation du parking
+     * découpage d'un bitmap pour garder qu'un pourcentage de ce dernier
+     * @param cars  drawable représentant la couleur
+     * @param pourcent pourcentage
+     */
     public void setCarsOverlay(int cars, float pourcent){
 
+        //conversion du drawable en bitmap
         Bitmap carsOverlayBitMap = BitmapFactory.decodeResource(getContext().getResources(), cars);
 
-        int newWidth = round((float)carsOverlayBitMap.getHeight() * pourcent/100.0f);
+        //calculer la nouvelle taille du bitmap
+        int newWidth = round((float)carsOverlayBitMap.getWidth() * pourcent/100.0f);
 
+        //création du bitmap de la bonne taille
         Bitmap croppedCars = Bitmap.createBitmap(carsOverlayBitMap, 0, 0 , newWidth , carsOverlayBitMap.getHeight());
 
-        ((ImageView) findViewById(R.id.carsOverlay)).setImageBitmap(croppedCars);
+        //changement de l'image représenté par des voitures
+        ((ImageView) contentView.findViewById(R.id.carsOverlay)).setImageBitmap(croppedCars);
     }
 
-    public void setTextPlaceTot(int nbPlaces){
+    /**
+     * définir la taille du parking
+     * nombre total de places du parking
+     * @param nbPlaces nombre de places lues dans le json
+     */
+    public void setPlaceTot(int nbPlaces){
         totalPlaces = nbPlaces;
-        parkPlaceTotal.setText("/"+String.valueOf(nbPlaces));
     }
 
     @Override
