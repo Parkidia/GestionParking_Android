@@ -122,9 +122,7 @@ public class UserLocationManager implements LocationListener {
                                 Log.i("Latitude",""+latitude);
                                 Log.i("longitude",""+longitude);
                             }
-
                         }
-
                     }
                 }
             }

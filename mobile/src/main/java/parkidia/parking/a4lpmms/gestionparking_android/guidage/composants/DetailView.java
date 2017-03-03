@@ -272,7 +272,9 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
         parkPlaceFree.setText(String.valueOf(nbPlaces));
 
         //calcul du pourcentage du parking utilisé
-        float pourcentUsed = ((float)nbPlaces*100.0f)/(float)totalPlaces;
+        float pourcentUsed = 1.0f-(((float)nbPlaces*100.0f)/(float)totalPlaces)/100.0f;
+
+        System.out.println("new dispo" + pourcentUsed);
 
         if(nbPlaces > 1) {
             extPlaces.setText("places libres");
@@ -280,16 +282,18 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
             extPlaces.setText("place libre");
         }
 
+        System.out.println("pourcent udes "+pourcentUsed);
+
         //choix des couleurs du texte et des voitures
-        if(pourcentUsed <= 40){
+        if(pourcentUsed <= 0.4f){
             parkPlaceFree.setTextColor(getResources().getColor(R.color.redColor));
-            setCarsOverlay(R.drawable.cars_red, pourcentUsed);
-        } else if(pourcentUsed <= 75) {
+            setCarsOverlay(R.drawable.cars_green, pourcentUsed);
+        } else if(pourcentUsed <= 0.75f) {
             parkPlaceFree.setTextColor(getResources().getColor(R.color.yellowColor));
             setCarsOverlay(R.drawable.cars_orange, pourcentUsed);
         } else {
             parkPlaceFree.setTextColor(getResources().getColor(R.color.greenColor));
-            setCarsOverlay(R.drawable.cars_green, pourcentUsed);
+            setCarsOverlay(R.drawable.cars_red, pourcentUsed);
         }
 
     }
@@ -306,7 +310,7 @@ public class DetailView extends LinearLayout implements View.OnTouchListener, Vi
         Bitmap carsOverlayBitMap = BitmapFactory.decodeResource(getContext().getResources(), cars);
 
         //calculer la nouvelle taille du bitmap
-        int newWidth = round((float)carsOverlayBitMap.getWidth() * pourcent/100.0f);
+        int newWidth = round((float)carsOverlayBitMap.getWidth() * (pourcent));
 
         //création du bitmap de la bonne taille
         Bitmap croppedCars = Bitmap.createBitmap(carsOverlayBitMap, 0, 0 , newWidth , carsOverlayBitMap.getHeight());

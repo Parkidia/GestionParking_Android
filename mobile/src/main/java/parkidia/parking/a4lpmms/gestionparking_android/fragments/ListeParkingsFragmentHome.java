@@ -173,6 +173,7 @@ public class ListeParkingsFragmentHome extends ListFragment {
                 ImageView icone = (ImageView) view;
                 int overlay;
                 double dispo = Double.parseDouble((String) data); // On récupère le taux de remplissage
+                System.out.println("dispo "+dispo);
                 if (dispo <= 0.40) {
                     overlay = R.drawable.cars_green;
                 } else if (dispo <= 0.75) {
