@@ -130,7 +130,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         }
 
         // Met en place les éléments dans la liste avec le layout sans aperçu du parking (no-preview)
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), items, layout, bindName, bindRes);
+        adapter = new SimpleAdapter(getContext(), items, layout, bindName, bindRes);
         // On ajoute le binder personnalisé
         adapter.setViewBinder(new MyBinder());
         this.setListAdapter(adapter);

@@ -148,6 +148,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                         }
                     });
                 }
+                reloadFragments();
             }
 
             @Override
