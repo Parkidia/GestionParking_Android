@@ -149,7 +149,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
         new AlertDialog.Builder(getContext())
                 .setTitle("Guidage")
                 .setMessage("Voulez-vous être guidé vers " + value.get("nom") + "?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                         //TODO remplacer par les bonne coordonées
@@ -158,7 +158,7 @@ public class ListeParkingsFragmentSearch extends ListFragment {
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                .setNegativeButton("Passer à la carte", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         int idP = Integer.parseInt(value.get("id"));
                         Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
