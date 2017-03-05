@@ -6,17 +6,14 @@
 package parkidia.parking.a4lpmms.gestionparking_android.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -143,38 +140,16 @@ public class ListeParkingsFragmentSearch extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
 
         // On récupère les infos de l'élement sélectionné
-        final HashMap<String, String> value = (HashMap) getListAdapter().getItem(position);
-
-        //demander si la personne veut être guidée vers le parking
-        new AlertDialog.Builder(getContext())
-                .setTitle("Guidage")
-                .setMessage("Voulez-vous être guidé vers " + value.get("nom") + "?")
-                .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        //TODO remplacer par les bonne coordonées
-                        Intent intent = new Intent(Intent.ACTION_VIEW,     //latitude   //longitude
-                                Uri.parse("http://maps.google.com/maps?daddr="+ "" + "," + ""));
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("Passer à la carte", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        int idP = Integer.parseInt(value.get("id"));
-                        Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
-                        boolean fav = Boolean.parseBoolean(value.get("favoris"));
-                        p.setFavoris(fav);
-                        // On envoie ces infos à l'activité de guidage
-                        Intent intent = new Intent(getContext(), GuideActivity.class);
-                        intent.putExtra("parking", p);
-                        // Démarre l'activité de guidage
-                        startActivity(intent);
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-
-
+        HashMap<String, String> value = (HashMap) getListAdapter().getItem(position);
+        int idP = Integer.parseInt(value.get("id"));
+        Parking p = new Parking(value.get("nom"), 0, 0, 0, 0, idP);
+        boolean fav = Boolean.parseBoolean(value.get("favoris"));
+        p.setFavoris(fav);
+        // On envoie ces infos à l'activité de guidage
+        Intent intent = new Intent(getContext(), GuideActivity.class);
+        intent.putExtra("parking", p);
+        // Démarre l'activité de guidage
+        startActivity(intent);
     }
 
     /**
